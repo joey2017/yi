@@ -1,0 +1,73 @@
+<include file="Inc:header"/>
+<link rel="stylesheet" href="__PUBLIC__/css/common_home.css">
+</head>
+<body>
+
+<div class="distri_top">
+    <center>
+        <div class="disimg"><img src="__PUBLIC__/images/supplier_default.jpg"></div>
+        <h3 class="nametitle">驰程</h3>
+    </center>
+</div>
+    
+<div class="fui-icon-group" >
+    <a class="fui-icon-col" >
+        <div class="icon icon-green radius"><i class="icon d1"></i></div>
+        <div class="text" >待付款</div>
+    </a>
+    <a class="fui-icon-col" >
+        <div class="icon icon-green radius"><i class="icon d2" ></i></div>
+        <div class="text" >待发货</div>
+    </a>
+    <a class="fui-icon-col" >
+        <div class="icon icon-green radius"><i class="icon d3" ></i></div>
+        <div class="text" >待收货</div>
+    </a>
+    <a class="fui-icon-col" >
+        <div class="icon icon-green radius"><i class="icon icon-electrical" ></i></div>
+        <div class="text" >退换货</div>
+    </a>
+</div>
+
+<div class="container-fluid line"></div>
+
+<div class="fui-icon-group col-3" >
+    <a class="fui-icon-col" href="">
+        <div class="icon icon-green radius"><i class="icon d1"></i></div>
+        <div class="text">优惠券</div>
+    </a>
+    <a class="fui-icon-col" href="">
+        <div class="icon icon-green radius"><i class="icon d2" ></i></div>
+        <div class="text" >进货明细</div>
+    </a>
+    <a class="fui-icon-col" href="">
+        <div class="icon icon-green radius"><i class="icon d3" ></i></div>
+        <div class="text" >信用额度</div>
+    </a>
+</div>
+
+<div class="container-fluid line"></div>
+
+<div>
+    <ul class="list-group">
+        <li class="list-group-item">
+            <span class="glyphicon glyphicon-user"></span>
+            我的账户
+            <span class="badge">></span>
+        </li>
+        <li class="list-group-item">
+            <span class="glyphicon glyphicon-user"></span>
+            关于我们
+            <span class="badge">></span>
+        </li>
+    </ul>
+</div>
+
+<!--底栏-->
+<include file="Inc:purchase_bottom"/>
+<script>
+    $('.bottombtn').find('a').removeClass('b_btn').last().addClass('b_btn');
+</script>
+
+</body>
+</html>

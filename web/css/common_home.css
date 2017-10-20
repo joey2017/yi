@@ -1,0 +1,191 @@
+.distri_top {
+    width: 100%;
+    height: 150px;
+    background-color: #eeb416;
+    padding: 20px 0 0 0;
+}
+
+.disimg {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid #fff;
+}
+
+.disimg img {
+    width: 100%;
+    height: 100%;
+}
+
+.nametitle {
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.disinfo {
+    margin: 15px 0 0 0;
+}
+
+.disinfo a {
+    color: #fff;
+}
+
+.disinfo a p {
+    margin: 0;
+}
+
+.disinfo a p b {
+    font-size: 18px;
+}
+
+.leftline {
+    border-right: 1px solid #fff;
+}
+
+.tab_parent {
+    padding-left: 15px;
+}
+
+.tab_subset {
+    margin: 0;
+    padding: 0 15px 0 0;
+}
+
+.distri_btn {
+    margin-top: 15px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.distri_btn a {
+    display: block;
+    width: 100%;
+    margin: 0 auto 5px auto;
+    border-radius: 10px;
+    border: 1px solid #d4d4d4;
+}
+
+.distri_btn a span {
+    width: 57px;
+    height: 64px;
+    display: block;
+    margin: 0 auto;
+    background-image: url(../images/distribution.svg);
+    background-size: 217px;
+}
+
+.disbtn01 {
+    background-position: 6px 14px;
+}
+
+.disbtn02 {
+    background-position: -60px 12px;
+}
+
+.disbtn03 {
+    background-position: -342px 14px;
+}
+
+.disbtn04 {
+    background-position: 4px -44px;
+}
+
+.disbtn05 {
+    background-position: -63px -46px;
+}
+
+.disbottominfo {
+    padding: 15px 0;
+    border-top: 1px solid #dcdcdc;
+    border-bottom: 1px solid #dcdcdc;
+    overflow: hidden;
+}
+
+.disbottominfo b {
+    font-size: 18px;
+}
+
+.disbottominfo p {
+    margin: 0;
+}
+
+.leftline2 {
+    border-right: 1px solid #dcdcdc;
+}
+
+.fui-icon-group {
+    position: relative;
+    overflow: hidden;
+    border-top: 1px solid #ebebeb;
+    border-bottom: 1px solid #ebebeb;
+    background: #fff
+}
+
+.fui-icon-group a {
+    display: block;
+    width: 100%
+}
+
+.fui-icon-group a i {
+    width: 57px;
+    height: 64px;
+    display: block;
+    background-image: url(../images/distribution.svg);
+    background-size: 217px
+}
+
+.d1 {
+    background-position: 10px 4px
+}
+
+.d2 {
+    background-position: -60px 4px
+}
+
+.d3 {
+    background-position: -342px 4px
+}
+
+.fui-icon-group .fui-icon-col {
+    width: 25%;
+    height: auto;
+    position: relative;
+    padding: .5rem 0;
+    text-align: center;
+    transition: background-color .3s;
+    -webkit-transition: background-color .3s;
+    float: left
+}
+
+.fui-icon-group .fui-icon-col:before {
+    content: " ";
+    position: absolute;
+    right: -1px;
+    top: .4rem;
+    width: 1px;
+    bottom: .4rem;
+    border-left: 1px solid #ebebeb
+}
+
+.fui-icon-group .fui-icon-col .icon {
+    height: 4rem;
+    margin: auto;
+    text-align: center;
+    line-height: 4rem
+}
+
+.fui-icon-group.col-3 .fui-icon-col {
+    width: 33.3%
+}
+
+.fui-icon-group.col-5 .fui-icon-col {
+    width: 20%
+}
+
+.fui-icon-group .fui-icon-col .icon img {
+    height: 2.2rem;
+    width: 2.2rem
+}

@@ -1,0 +1,32 @@
+<!--头部-->
+<div class="container-fluid topbox">
+    <div class="row top"><h1 style="display:none;">诚车堂汽车网</h1>
+        <div class="pg-Current">
+            <a href="javascript:history.go(-1);" ><span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span></a>
+        </div>
+        <div class="pg-Current">
+            <img src="__PUBLIC__/images/cheng.png" width="30" height="30">
+        </div>
+        <div class="pgt">
+            <a>资讯</a>
+        </div><!--
+        <div class="pgbtn">
+            <a href=""><span class="glyphicon glyphicon-search" aria-hidden="true"></span></a>
+        </div>
+        -->
+        
+    </div>
+</div>
+
+<!--资讯导航-->
+<div class="swiper-nav">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide"><a href='<{:U("Article/index",array("cid"=>0))}>' <if condition=" $cid eq 0 " > class="newsa" </if>>推荐</a></div>
+            <div class="swiper-slide"><a href='<{:U("Article/index",array("cid"=>15))}>' <if condition=" $cid eq 15 " > class="newsa" </if>>常识</a></div>
+            <div class="swiper-slide"><a href='<{:U("Article/index",array("cid"=>6))}>' <if condition=" $cid eq 6 " > class="newsa" </if>>美容</a></div>
+            <div class="swiper-slide"><a href='<{:U("Article/index",array("cid"=>8))}>' <if condition=" $cid eq 8 " > class="newsa" </if>>保养</a></div>
+            <div class="swiper-slide"><a href='<{:U("Article/index",array("cid"=>38))}>' <if condition=" $cid eq 38 " > class="newsa" </if>>行业</a></div>
+            <div class="swiper-slide"><a href='<{:U("Article/index",array("cid"=>7))}>' <if condition=" $cid eq 7 " > class="newsa" </if>>装潢</a></div>
+            <div class="swiper-slide"><a href='<{:U("Article/index",array("cid"=>9))}>' <if condition=" $cid eq 9 " > class="newsa" </if>>喷漆</a></div>
+        </div>
+</div>

@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Country;
+use yii\data\Pagination;
 use app\models\CountrySearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -41,6 +42,31 @@ class CountryController extends Controller
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
+     * Lists all Country models.
+     * @return mixed
+     */
+    public function actionList()
+    {
+        $Model = Country::find();
+        // var_dump($Model);die;
+        // $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $pagination = new Pagination([
+            'defaultPageSize' => 5,
+            'totalCount'      => $Model->count(),
+        ]);
+        // var_dump($pagination);die;
+        $countries = $Model->orderBy('name')
+        ->offset($pagination->offset)
+        ->limit($pagination->limit)
+        ->all();
+        // var_dump($countries);die;
+        return $this->render('list', [
+            'countries' => $countries,
+            'pagination' => $pagination,
         ]);
     }
 

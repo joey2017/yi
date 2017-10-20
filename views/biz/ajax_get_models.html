@@ -1,0 +1,18 @@
+<volist name="car_models_list" id="car_models_list" key="k">
+
+     <span class="markspan"><{$key}></span>
+     <volist name="car_models_list" id="cml">
+     <a href="javascript:select_models(<{$cml.id}>,'<{$cml.name}>')">
+        <li>
+            <div class="link"><{$cml.name}></div>
+            <!--
+            <ul class="submenu">
+                <li><a href="">ALFA 147</a></li>
+                <li><a href="">ALFA 156</a></li>
+                <li><a href="">ALFA GT</a></li>
+            </ul>
+            -->
+        </li>
+    </a>
+    </volist>
+</volist>

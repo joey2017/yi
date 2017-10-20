@@ -1,0 +1,56 @@
+<include file="Inc:header"/>
+</head>
+<body>
+<!--头部-->
+<div class="container-fluid topbox">
+    <div class="row top">
+        <div class="pg-Current">
+        	<a href="<{:U('User/order')}>" ><span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span></a>
+        </div>
+        <div class="pg-Current">
+        	<img src="__PUBLIC__/images/cheng.png" width="30" height="30">
+        </div>
+        <div class="pgt">
+        	<a>支付结果</a>
+        </div>             
+    </div>
+</div>
+<!--分割线-->
+<if condition="$order.pay_status egt 1">
+    <div class="container-fluid">
+        <div class="row"><center><h3 style="margin-top:10px; color:#5cb85c;"><span class="glyphicon glyphicon-ok" style="top:3px;"></span>确认成功</h3></center></div>
+    </div>
+    <!--订单号-->
+    <div class="container-fluid">
+    	<div class="row">
+        	<div class="col-xs-12"> 
+            	<p style="padding-top:10px;padding-bottom:10px;border-bottom:1px solid #e0e0e0;">交易单号：<span style="font-weight:bold;"><{$order.order_sn}></span></p>
+                
+                <p style="padding-top:10px;padding-bottom:10px;border-bottom:1px solid #e0e0e0;">支付方式：<span style="font-weight:bold;"><{$order.pay_type}></span></p>
+                 <p style="padding-top:10px;padding-bottom:10px;border-bottom:1px solid #e0e0e0;">订单金额：<span style="font-weight:bold;">￥<{$order.total_price|price}></span></p>  
+                 <p style="padding-top:10px;padding-bottom:10px;border-bottom:1px solid #e0e0e0;">确认时间：<span style="font-weight:bold;"><{$order.pay_time|date="Y-m-d H:i:s",###}></span></p>             
+            </div>
+        </div>
+    </div>
+<else />
+    <div class="container-fluid">
+        <div class="row"><center><h3 style="color:#cd0000;margin-top:10px;"><span class="glyphicon glyphicon-remove" style="top:3px;"></span>确认失败</h3></center></div>
+    </div>
+</if>
+<!--分割线-->
+<div class="container-fluid">
+	<div class="row">
+        <div class="col-xs-12">
+            <a role="button" class="btn btn-warning btn-block" href="<{:U('Biz/purchase_order')}>"  style="margin-top:10px;">我的订单</a>
+        </div>
+    </div>
+</div>
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<script type="text/javascript">
+    document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+      WeixinJSBridge.call('hideToolbar');
+      WeixinJSBridge.call('hideOptionMenu');
+    });
+</script>

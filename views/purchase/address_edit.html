@@ -1,0 +1,173 @@
+<include file="Inc:header"/>
+
+</head>
+
+<body>
+<div class="alertBg" id="msgBox" style="display:none;">
+    <h4 class="alerttitle" id="alerttitle"></h4>
+    <span class="vm f20" id='alertdetail'></span>
+</div>
+<!--地址信息-->
+<div class="container-fluid">	
+    <div class="row">
+    	
+        	<div class="col-xs-12 xgbox">
+            	<dl style="margin-top:10px; overflow:hidden">
+                	<dd class="kv-line">
+                    	<h3>姓名：</h3>
+                		<input type="text" class="input-weak d_b" name="user_name" id="user_name" placeholder="最少2个字" value="<{$address.name}>" />
+                    </dd>
+                    <dd class="kv-line">
+                    	<h3>电话：</h3>
+                		<input type="text" class="input-weak d_b"  name="tel" id="tel" placeholder="不少于7位" value="<{$address.tel}>" />
+                    </dd>
+                    <dd class="kv-line">
+                    	<h3>省份：</h3>
+                        <label class="select d_b">
+                            <select class="input-weak d_b" name="province" id="province">
+                                <option value="0">选择省份</option>
+                                <volist name="province_list" id="pl">
+                                    <option value="<{$pl.id}>_<{$pl.name}>" <if condition="$pl.id eq $address['province_id']"> selected="selected"</if> ><{$pl.name}></option>
+                                </volist>                                
+                            </select>
+                            <span class="glyphicon glyphicon-menu-down"  aria-hidden="true"></span> 
+                        </label>
+                    </dd>
+                    <dd class="kv-line">
+                    	<h3>城市：</h3>
+                        <label class="select d_b">
+                            <select class="input-weak d_b"name="city" id="city">
+                                  <option value="0">选择城市</option>
+                                     <{$city}>          
+                            </select>
+                            <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span> 
+                        </label>
+                    </dd>
+                    <dd class="kv-line">
+                    	<h3>地区：</h3>
+                        <label class="select d_b">
+                            <select class="input-weak d_b" name="area" id="area">
+                                    <option value="0">选择地区</option>
+                                   <{$area}>    
+                            </select>
+                            <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span> 
+                        </label>
+                    </dd>
+                    <dd class="kv-line">
+                    	<h3>地址：</h3>
+                		<input type="text" class="input-weak d_b" name="address" id="address" placeholder="最少5个字,最多60个字,不能全部为数字" value="<{$address.detail_address}>" />
+                    </dd>
+                 
+                    <dd class="kv-line">
+                    	<label class="react">
+                            <input type="checkbox" name="is_default" id="is_default"  <if condition="$address['is_default'] eq 1">checked='true'</if> value="" class="mt">
+                            设为默认地址
+                        </label>
+                    </dd>
+                    
+                </dl>
+                    <button type="button" class="btn btn-primary  btn-block  btn-warning" id="submit">修改</button>
+             </div>         
+    </div>
+   <input type="hidden" id="address_id" value="<{$address.id}>">
+</div>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+<script type="text/javascript">
+    $('#submit').click(function(){
+            var args = {
+                id:$('#address_id').val(),
+                user_name:$('#user_name').val(),
+                province:$('#province').val(),
+                city:$('#city').val(),
+                area:$('#area').val(),
+                address:$('#address').val(),
+                tel:$('#tel').val(),
+                is_default:0
+            };
+
+            if($('#is_default').is(':checked')){
+                args.is_default=1;
+            }
+         
+            if(args.user_name == ''){
+                MsgBox('请填写收货人姓名');
+                return false;
+            }
+            if(args.tel == ''){
+                MsgBox('请填写手机/电话');
+                return false;
+            }
+            if(args.province == 0){
+                MsgBox('请选择省份');
+                return false;
+            }
+            if(args.city== 0){
+                MsgBox('请选择城市');
+                return false;
+            }
+            if(args.area== 0){
+                MsgBox('请选择区/县');
+                return false;
+            }
+            if(args.address == ''){
+                MsgBox('请填写详细地址');
+                return false;
+            }        
+            $('#submit').attr('disabled',true);
+            $.ajax({
+                    url:"<{:U('Purchase/ajax_address_save')}>",
+                    type:"post",
+                    data:args,
+                    dataType:"json",
+                    success:function(data){  
+                        MsgBox(data.msg);
+                        if(data.status == 1){                           
+                            window.location.href="<{:U('Purchase/address_list')}>";
+                        }
+                    }
+            });
+    })
+
+    $('#province').change(function(){
+        if($(this).val()){
+          get_area($(this).val(),1)
+        }
+        $('#area').html('<option value="0">选择地区</option>');
+    })
+
+    $('#city').change(function(){
+        if($(this).val()){
+          get_area($(this).val(),2)
+        }
+    })
+
+    function get_area(id,type){
+          $.ajax({
+                url:"<{:U('Purchase/get_area')}>",
+                type:"POST",
+                data:{
+                  "id":id,
+                  "type":type
+                },
+                dataType:"json",
+                success:function(data){    
+                    if(type==1){
+                        $('#city').html(data);
+                    }else{
+                        $('#area').html(data);
+                    }      
+                   
+                }
+            });
+    }
+</script>
+<script type="text/javascript">
+document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+  WeixinJSBridge.call('hideToolbar');
+  WeixinJSBridge.call('hideOptionMenu');
+});
+</script>
+</body>
+</html>

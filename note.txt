@@ -1,0 +1,5 @@
+refresh() 或 redirect() 去避免表单重复提交
+
+Yii::$app 代表应用实例， 能提供 request，response，db 等等特定功能的组件
+
+ Yii::$app->response->format=Response::FORMAT_JSON;//设置返回信息头

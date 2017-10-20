@@ -1,0 +1,145 @@
+<include file="Inc:header"/>
+
+</head>
+
+
+<body>
+
+<style type="text/css">
+/*布局样式重置*/
+.tab_parent{padding-left: 15px;}
+.tab_subset{margin:0; padding: 0 15px 0 0;}
+a{color: #333;}
+a:focus,a:active, a:hover{color: #333; text-decoration: none;}
+.box_flex{font-size:14px; display: -webkit-box; display: -moz-box; display: -webkit-flex; display: -moz-flex; display: -ms-flexbox; display: flex;}
+.flex1{ -webkit-box-flex: 1; -moz-box-flex: 1; -webkit-flex: 1; -ms-flex: 1; flex: 1;}
+body{position: relative;}
+.o_f{overflow: hidden;}
+
+/*地址*/
+.addinfo{padding: 10px; border-bottom: 5px solid #eee;}
+.addinfo .bline p{padding: 0 0 6px 0; margin:0; line-height: 25px; }
+.bline{border-bottom: 1px solid #e6e6e6;}
+
+.infobtn p{margin: 10px 0 0 0; line-height: 33px;}
+
+.tickbtn{display: inline-block;}
+.tickico,.tickNull{display: inline-block; width: 20px; height: 20px;    vertical-align: middle;}
+.tickico{ background: url(__PUBLIC__/images/tick.svg) no-repeat; background-size: 40px;}
+.tickNull{background: url(__PUBLIC__/images/tick.svg) no-repeat -20px 0; background-size: 40px;}
+
+/*底部按钮*/
+.sift_bottom{position:fixed; bottom: 0; right: 0; width: 100%;}
+.sift_bottom a{background: #ea413e;color: #fff;border:0;width:100%; height: 48px;line-height: 48px;text-align: center;}
+
+.no_record{height: 24px;  padding-top: 205px;  text-align: center;  background: url(http://s.17cct.com/v5/images/erp/empty.png) no-repeat center 20px;  background-size: 180px 180px;}
+</style>
+<link rel="stylesheet" type="text/css" href="http://s.17cct.com/v3/js/dialog/skins/dialog.css" />
+<script src="http://s.17cct.com/v3/js/dialog/artDialog.js?v=20141216"></script>
+
+<div class="alertBg" id="msgBox" style="display:none;">
+    <h4 class="alerttitle" id="alerttitle"></h4>
+    <span class="vm f20" id='alertdetail'></span>
+</div>
+
+<if condition='$address_list neq ""'>
+	<volist name="address_list" id="al">
+		<div class="o_f addinfo">
+			<div class="bline">
+				<p class="o_f ">
+					<span class="pull-left"><{$al.name}></span>
+					<span class="pull-right"><{$al.tel}></span>
+				</p>
+				<p >
+					<{$al.full_address}>
+				</p>
+			</div>
+			<div class="infobtn">
+				<p>
+					<span>
+						<a class="tickbtn text-center"><span id="default_<{$al.id}>" onclick="set_default(<{$al.id}>,this)"  class="default <if condition='$al.is_default eq 1'>tickico<else/>tickNull</if>"></span> 设为默认</a>
+					</span>
+					<span class="pull-right">
+						<a class="btn btn-default btn-sm" href="<{:U('Purchase/address_edit',array('id'=>$al['id']))}>">编辑</a>
+						<button class="btn btn-default btn-sm" onclick="del_address(<{$al.id}>)" >删除</button>
+					</span>
+				</p>
+			</div>
+		</div>
+	</volist>
+<else/>
+<div class="no_record col-sm-12">暂无数据</div>
+</if>
+
+<script type="text/javascript">
+	function set_default(id,_this) {
+		if($(_this).hasClass('tickico')){
+			window.location.href="<{:U('Purchase/check_order')}>?ids=<{$ids}>";
+			return;
+		}
+		 $.ajax({
+		        url:"<{:U('Purchase/ajax_set_default')}>",
+		        type:"POST",
+		        data:{
+		          "id":id
+		        },
+		        dataType:"json",
+		        success:function(data){   
+		        	MsgBox(data.msg);     		
+		            if(data.status){	
+		            	$('.default').removeClass('tickico').addClass('tickNull');
+		            	$(_this).removeClass('tickNull').addClass('tickico');
+		            	window.location.href="<{:U('Purchase/check_order')}>?ids=<{$ids}>";
+		            }
+			    }
+		}); 
+	}
+
+	function del_address(id){
+		if($('#default_'+id).hasClass('tickico')){
+			MsgBox('不能删除默认地址');
+			return false;
+		}
+		art.dialog({
+			    content:'确定删除该地址？',
+			    icon:'warning',
+			    title:'删除地址',
+			    ok: function () {			
+					    $.ajax({
+					        url:"<{:U('Purchase/ajax_address_del')}>",
+					        type:"POST",
+					        data:{
+					          "id":id
+					        },
+					        dataType:"json",
+					        success:function(data){   
+					        	MsgBox(data.msg);     		
+					            if(data.status){	
+					            	setTimeout(function(){					            		
+							        	window.location.reload();
+					            	},2000)
+					            }
+						    }
+					}); 
+			    },
+			    width:'200px',
+	    		height:'80px',
+			    cancelVal: '取消',
+			    cancel:function(){}
+			});	
+	}
+</script>
+<script type="text/javascript">
+document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+  WeixinJSBridge.call('hideToolbar');
+  WeixinJSBridge.call('hideOptionMenu');
+});
+</script>
+
+<div style="height:48px;"></div>
+<div class="sift_bottom">
+	<a href="<{:U('Purchase/address_add')}>" class="btn-block">添加新地址</a>
+</div>
+
+</body>
+</html>

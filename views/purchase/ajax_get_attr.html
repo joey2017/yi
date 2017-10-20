@@ -1,0 +1,53 @@
+<volist name="attr_list" id="a">
+	<div class="sift_row">
+		<div class="row_title">
+			<{$a.attr_name}>
+			<span class="fa fa-caret-down pull-right"></span>
+		</div>
+		<div class="row_body">
+			<ul class="row">
+					<!-- <li class="col-xs-4">
+						<a href="javascript:;" class="tc_project attr_val tc_choose" value="0">不限</a>
+					</li> -->
+				<volist name="a['attr_val']" key="k" id="av">
+					<li class="col-xs-4">
+						<a href="javascript:;" class="tc_project attr_val" value="<{$a.id}>:<{$av}>"><{$av}></a>
+					</li>
+				</volist>					
+			</ul>
+		</div>
+	</div>
+</volist>
+
+<script type="text/javascript">
+
+	$(document).ready(function(){  
+
+		$(".row_title").each(function(index){
+			$(this).click(function(){
+				$(this).find('span').toggleClass('fa-caret-down').toggleClass('fa-caret-up');
+				$(this).next().toggle();
+			});	
+		});
+
+	});   
+
+
+	$(".row a").click(function(){ 
+		// $(this).addClass("tc_choose").parent().siblings().find('.tc_project').removeClass("tc_choose");
+		$(this).toggleClass('tc_choose');
+		var attr = [];
+		$(".row a").filter('.attr_val').each(function(){
+			if($(this).hasClass("tc_choose") && $(this).attr('value')!=0){
+				attr.push($(this).attr('value'));
+			}
+		});
+
+		$('#attr_value').val(attr);
+
+		// currentpage=0;
+		// ajax_get_goods();
+
+	});
+
+</script>

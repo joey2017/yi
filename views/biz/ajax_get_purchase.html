@@ -1,0 +1,63 @@
+<volist name="order" id="order">
+    <!--分割线-->
+<div class="container-fluid line"></div>
+
+<style type="text/css">
+.my_od_1{border-bottom: 1px solid #eee;}
+.infopad{margin:8px 0;}
+</style>
+
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12">
+            <a href="<{:U('Biz/purchase_detail',array('id'=>$order['id']))}>" class="my_od">
+                <span style="float:left; font-size:16px; font-weight:bold;"><{$order.order_sn}></span>
+                <div class="pull-right">                   
+                    <span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>
+                </div>  
+            </a>    
+        </div>
+    </div>
+    <div class="row" >
+        <div class="col-xs-12">         
+            <a href="" class="my_od_1">
+                <div class="my_od_f">
+                    <div class="infopad">订单状态：<{$order.order_status}></div>
+                    <div class="infopad">优惠金额：￥<{$order.discount_price|price}></div>
+                    <div class="infopad">订单金额：<span style="font-weight:bold;color:#F00;">￥<{$order.total_price|price}></span></div>
+                    <div class="infopad">下单时间：<{$order.create_time|date="Y-m-d H:i:s",###}></div>
+                </div>
+            </a>
+                    
+        </div>
+    </div>
+   <!--  <div class="row">       
+        <div class="col-xs-12">
+            <div style=" line-height: 35px;  border-bottom: 1px solid #e0e0e0; text-align: right;">                
+                    <{$order.order_status}> 111       
+            </div>
+        </div>
+    </div> -->
+    <div class="row">
+        <div class="col-xs-12">
+            <if condition="$order['is_del'] eq 0">
+                <if condition="$order['pay_status'] eq 0 AND $type eq 3">
+                     <a type="button" href="<{:U('Purchase/order',array('id'=>$order['id'],'t'=>'pms_merge_order'))}>" style="float:right;margin:10px 6px;" class="btn btn-warning btn-sm">提交订单</a>  
+                </if>  
+                <if condition="$type eq 1 || $type eq 2 || $type eq 5">
+                    <if condition="$order['purchase_user_id'] eq 0 && $order['type'] eq 2">
+                            <a type="button" href="<{:U('Purchase/order',array('id'=>$order['id'],'t'=>'pms_order'))}>" style="float:right;margin:10px 6px;" class="btn btn-warning btn-sm">确认订单</a>
+                    </if>
+                    <if condition="$order['status'] eq 2">
+                         <a type="button" href="<{:U('Purchase/receipt_goods',array('id'=>$order['id']))}>" style="float:right;margin:10px 6px;" class="btn btn-warning btn-sm">确认收货</a>  
+                    </if>   
+                </if>    
+            </if>
+            <a class="btn btn-default btn-sm" href="<if condition='$type eq 1 || $type eq 2 || $type eq 5'><{:U('Biz/purchase_detail',array('id'=>$order['id']))}><else/><{:U('Biz/merge_order_detail',array('id'=>$order['id']))}></if>"  style="float:right;margin:10px 0;">查看详情</a>                   
+               
+        </div>
+    </div>
+</div>
+</volist>

@@ -1,0 +1,159 @@
+<include file="Inc:header"/>
+<link href="__PUBLIC__/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+<script type="text/javascript" src="__PUBLIC__/js/fastclick.js"></script>
+</head>
+
+<body>
+<div class="alertBg" id="msgBox" style="display:none;">
+    <h4 class="alerttitle" id="alerttitle"></h4>
+    <span class="vm f20" id='alertdetail'></span>
+</div>
+<style type="text/css">
+.main_data{ background: #FD4545; padding: 30px 0;    margin-bottom: 11px; overflow: hidden; color: #fff; }
+.verification{ height: 70px;font-size: 28px; text-align: center; border: 0; background-color: #E63A3A; color: #FFF;  box-shadow: none;}
+.card_details{border-bottom: 1px solid #eee; height: 50px; line-height: 18px; padding: 15px 15px;}
+.card_details td{padding: 0 15px 0 0;}
+.deta_name{width:78px;text-align: right; margin-right: 10px;}
+.box-flex{ display: -webkit-box; display: -moz-box; display: -webkit-flex; display: -moz-flex; display: -ms-flexbox;  display: flex; }
+.flex1{-webkit-box-flex: 1;-moz-box-flex: 1;-webkit-flex: 1;-ms-flex: 1;flex: 1;}
+
+.keyboard{list-style: none; padding:0;}
+.keyboard li{display: inline-block; text-align: center;  border-radius: 12px;}
+
+.keyboard li a{
+    width: 64px;
+    height: 64px;
+    border-radius: 100%;
+    border:1px solid #FFB87B;
+    display: block;
+    line-height: 64px;
+    font-size: 26px;
+    margin: 7px auto 0 auto;
+    text-decoration:none;
+}
+.keyboard li a:active{color: #fff; background-color: #FFB87B; }
+
+.form-control[readonly]{    background-color: #E63A3A;}
+
+</style>
+
+
+<div class="container-fluid main_data" >
+    <div class="col-xs-12">
+        <input type="text" id="sn" class="form-control verification"  readonly="true"  maxlength="10" name="bd_bp_messName" value="请输入服务验证码"  >
+    </div>    
+</div>
+
+<div class="container-fluid">
+    <ul class="keyboard">
+        <li class="col-xs-4" ><a onclick="write_number('1')">1</a></li>
+        <li class="col-xs-4" ><a onclick="write_number('2')">2</a></li>
+        <li class="col-xs-4" ><a onclick="write_number('3')">3</a></li>
+        <li class="col-xs-4" ><a onclick="write_number('4')">4</a></li>
+        <li class="col-xs-4" ><a onclick="write_number('5')">5</a></li>
+        <li class="col-xs-4" ><a onclick="write_number('6')">6</a></li>
+        <li class="col-xs-4" ><a onclick="write_number('7')">7</a></li>
+        <li class="col-xs-4" ><a onclick="write_number('8')">8</a></li>
+        <li class="col-xs-4" ><a onclick="write_number('9')">9</a></li>
+        <li class="col-xs-4" ><a onclick="javascript:$('#sn').val('请输入预约验证码')" style="border-color:#80C6CA;font-size: 16px;">清空</a></li>
+        <li class="col-xs-4" ><a onclick="write_number('0')">0</a></li>
+        <li class="col-xs-4" ><a onclick="write_number('-1')" style="border-color: #DE93BD;"><i class="fa fa-angle-left"></i></a></li>
+    </ul>
+    <div class="col-xs-12" style="margin-top:12px;"> <button type="button" id="trigger-overlay" class="btn btn-warning btn-lg btn-block">验证</button></div>
+</div>
+
+
+<div class="black" id="black" style="top:0"></div>
+<div class="overlay-slidedown" id="overlay-slidedown" style="">
+    <a class="btn btn-default" role="button" id="overlay-close" style="width:auto;margin:-17px 20px 17px 0;"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+    <div id="sn_info">
+
+    </div>
+  
+    
+
+</div>
+<script type="text/javascript">
+    $(function() {
+        FastClick.attach(document.body);
+    });
+
+    var w_h = $(window).height(),
+        black = $("#black"),
+        overlay_slidedown = $('#overlay-slidedown'),
+        load_black = $('#load-black');
+    $('body').css('position','relative');
+    $('#sxlist').css('height',w_h*0.9-145);
+    overlay_slidedown.css('height',w_h*0.9);
+    load_black.css({'height':w_h*0.9-145,'bottom':94});
+
+    $(function(){
+        $("#overlay-close").click(function(){
+            overlay_slidedown.slideUp(300);
+            black.hide();
+        });
+        $("#trigger-overlay").click(function(){
+            var sn=$('#sn').val();
+            if(sn=='请输入服务验证码'){
+                MsgBox('请输入验证码');
+                return false;
+            }
+            if(sn.length<=7){
+                MsgBox('验证码至少为八位');
+                return false;
+            }
+            $.post("<{:U('Biz/ajax_verify')}>",{"dhm":sn},function(data){
+            if(data.status){
+                $('#sn_info').html(data.msg)
+                overlay_slidedown.slideDown(300);
+                black.show(10);
+            }else{
+               MsgBox(data.msg);               
+            }
+        })
+           
+        });
+    });
+
+    function user_account(){
+        $.get("<{:U('Biz/user_account')}>",{},function(data){
+            if(data.status){     
+                MsgBox('验证码使用成功');          
+                $(".gwbt").html(data.msg);
+            }else{
+                 MsgBox(data.msg);
+            }           
+        })
+    }
+
+    function write_number(num){
+        var sn=$('#sn').val(),msg='请输入服务验证码';
+        console.log(sn)
+        if(sn==msg&&num==-1){
+            return false;
+        }       
+        else if(sn.length==1&&num==-1){
+            $('#sn').val(msg);
+            return false;
+        }
+        else if(num==-1){
+            sn=sn.substring(0,sn.length-1);
+            $('#sn').val(sn);
+            return false;
+        }
+        else if(sn.length>9){
+            MsgBox('验证码不能超过十位数');
+            return false;
+        }
+       else  if(sn==msg){
+            sn=num;
+        }else{
+            sn=sn+num
+        }
+        $('#sn').val(sn)
+    }
+
+
+</script>
+</body>
+</html>

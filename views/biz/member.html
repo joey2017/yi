@@ -1,0 +1,95 @@
+<include file="Inc:header"/>
+</head>
+<body>
+<!--头部-->
+<link href="__PUBLIC__/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+<link rel="stylesheet" href="__PUBLIC__/css/carinfo.css">
+
+<div class="container-fluid topbox">
+    <div class="row top"><h1 style="display:none;">诚车堂汽车网</h1>
+        <div class="pg-Current">
+        	<a href="" ><span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span></a>
+        </div>
+        <div class="pg-Current">
+        	<img src="__PUBLIC__/images/cheng.png" width="30" height="30">
+        </div>
+        <div class="pgt">
+        	<a>会员列表</a>
+        </div>
+    </div>
+</div>
+
+<div class="alertBg" id="msgBox" style="display:none;">
+    <h4 class="alerttitle" id="alerttitle"></h4>
+    <span class="vm f20" id='alertdetail'></span>
+</div>
+<div id="member_list">
+
+</div>
+
+<script type="text/javascript">
+        var stop=true; 
+        var currentpage=0;
+        ajaxRed()
+        $(window).scroll(function(){ 
+            totalheight = parseFloat($(window).height()) + parseFloat($(window).scrollTop()); 
+            if($(document).height() <= totalheight){ 
+                if(stop==true){ 
+                    ajaxRed();
+                } 
+            } 
+        });
+        function ajaxRed(){
+              $("#load").show();
+              stop=false;
+              $.get("<{:U('Biz/ajax_get_member')}>",{"p":currentpage}
+              ,function(html){ 
+                      if(html!=""){ 
+                          if(currentpage==0)
+                          {
+                            $("#member_list").html(html);
+                          } 
+                          else
+                          {
+                            $("#member_list").append(html);
+                          }
+                      }else{
+                        MsgBox('已查询全部结果')
+                      }
+                      stop=true;
+                      currentpage++;
+                     $("#load").hide();  
+                 });              
+        }
+
+        function del_member(id){
+            if(confirm('删除不可恢复,您确定删除?')){
+                 $.get("<{:U('Biz/del_member')}>",{"id":id}
+              ,function(d){ 
+                     MsgBox(d.info)
+                      if(d.status){ 
+                        setTimeout(function() { window.location.reload() },2000);                          
+                      }
+                 }); 
+            }
+        }
+
+</script>
+<!--分割线-->
+
+
+
+
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+<!--底部固定按钮-->
+<div class="container-fluid">
+	<div class="gwbt" style="height:auto; position: fixed;">
+    	<a class="btn-danger" href="<{:U('Biz/add_member')}>" ><i class="fa fa-plus"></i> 添加客户</a>
+    </div>
+</div>
+
+</body>
+</html>

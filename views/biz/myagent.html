@@ -1,0 +1,113 @@
+<include file="Inc:header"/>
+</head>
+
+<body>
+
+<style type="text/css">
+.specialbox{max-width: 700px; margin:0 auto;}
+.specialbox img{width: 100%;}
+.the_number{width: 100%; background:#30385f; color: #fff; }
+.the_number .btn{ background: #9bd55d;  color: #30385f; width: 290px; margin: 15px auto; line-height: 30px;   font-weight: bold;  border-radius: 25px;}
+.joinnumber{padding: 15px 0;}
+.joinnumber span{display: inline-block; background: #151b3f; padding: 1px 10px;}
+.QR_code{background: url(__PUBLIC__/images/fxspecial/10.jpg) 0px -86px;}
+.QR_code img{width: 210px;}
+.nameinfo{border-top: 1px solid #cecccc; padding: 16px; font-size: 12px;}
+.nameinfo img{width: 60px;    border-radius: 50px; margin-right: 15px;}
+.nameinfo p{margin-bottom: 5px;}
+.nameinfo b{font-size: 18px;}
+.nameinfo span{color: #cd0008;}
+</style>
+
+
+<div class="specialbox">
+    <img src="http://image.17cct.com/images/fxspecial/1.jpg!max">
+    <div class="the_number text-center">
+        <div class="joinnumber">
+            已有
+            <span><{$shop_count[0]}></span>
+            <span><{$shop_count[1]}></span>
+            <span><{$shop_count[2]}></span>
+            <span><{$shop_count[3]}></span>
+            <span><{$shop_count[4]}></span>
+            家门店加入
+        </div>
+        <p>门店合伙人招募中……</p>
+        <a class="btn" href="javascript:;">立即分享采购佣金</a>
+    </div>
+    <img src="http://image.17cct.com/images/fxspecial/2.jpg!max">
+    <img src="http://image.17cct.com/images/fxspecial/3.jpg!max">
+    <img src="http://image.17cct.com/images/fxspecial/4.jpg!max">
+    <img src="http://image.17cct.com/images/fxspecial/5.jpg!max">
+    <img src="http://image.17cct.com/images/fxspecial/6.jpg!max">
+    <img src="http://image.17cct.com/images/fxspecial/7.jpg!max">
+    <img src="http://image.17cct.com/images/fxspecial/8.jpg!max">
+    <img src="http://image.17cct.com/images/fxspecial/9.jpg!max">
+    <div class="QR_code text-center">
+        <img src="http://www.17cct.com/<{$qrcode}>">
+        <p>长按识别图中二维码</p>
+    </div>
+    <div class="nameinfo col-xs-12">
+        <!-- <if condition="$pms_supplier['img'] neq ''"><div class="pull-left"><img src="<{$pms_supplier.img}>"></div></if> -->
+        <div class="pull-left">
+            <p><b>我是 <span><{$pms_supplier.account_name}></span></b></p>
+            <p>我为车堂盛世代言</p>
+            <p><{$location_name}>  授权用户</p>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+<script src="http://s.17cct.com/v3/js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script type="text/javascript">
+
+    wx.config({
+            debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            appId: 'wxbd68bd4fe539eba2', // 必填，公众号的唯一标识
+            timestamp: '<{$time}>', // 必填，生成签名的时间戳
+            nonceStr: '<{$nonceStr}>', // 必填，生成签名的随机串
+            signature:'<{$sign}>',// 必填，签名，见附录1
+            jsApiList: ['checkJsApi','onMenuShareTimeline','onMenuShareAppMessage','onMenuShareQQ','onMenuShareWeibo'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+        });
+
+        wx.ready(function(){
+              // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。   
+              wx.onMenuShareTimeline({
+                title: '成为车堂盛世门店合伙人', // 分享标题
+                link: 'http://m.17cct.com/Supplier/get_open_id.html?code=<{$agent_code}>', // 分享链接
+                imgUrl: 'http://s.17cct.com/v5/images/pic300_y.jpg', // 分享图标
+                success: function () { 
+                    // 用户确认分享后执行的回调函数
+                    
+                },
+                cancel: function () { 
+                    // 用户取消分享后执行的回调函数
+                }
+            });  
+            wx.onMenuShareAppMessage({
+                title: '成为车堂盛世门店合伙人', // 分享标题
+                desc: '车堂盛世邀您分享“亿元”采购佣金', // 分享描述
+                link: 'http://m.17cct.com/Supplier/get_open_id.html?code=<{$agent_code}>', // 分享链接
+                imgUrl: 'http://s.17cct.com/v5/images/pic300_y.jpg', // 分享图标
+                type: 'link', // 分享类型,music、video或link，不填默认为link
+                dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+                success: function () { 
+                    // 用户确认分享后执行的回调函数
+                },
+                cancel: function () { 
+                    // 用户取消分享后执行的回调函数
+                }
+            }); 
+        
+        });
+      
+        
+        
+</script>
+</body>
+</html>

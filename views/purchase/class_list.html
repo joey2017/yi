@@ -1,0 +1,131 @@
+<include file="Inc:header"/>
+<link rel="stylesheet" href="__PUBLIC__/font-awesome/css/font-awesome.min.css">
+</head>
+<body>
+
+<style type="text/css">
+/*布局样式重置*/
+.tab_parent{padding-left: 15px;}
+.tab_subset{margin:0; padding: 0 15px 0 0;}
+a{color: #333;}
+a:focus,a:active, a:hover{color: #333; text-decoration: none;}
+.box_flex{font-size:14px; display: -webkit-box; display: -moz-box; display: -webkit-flex; display: -moz-flex; display: -ms-flexbox; display: flex;}
+.flex1{ -webkit-box-flex: 1; -moz-box-flex: 1; -webkit-flex: 1; -ms-flex: 1; flex: 1;}
+body{position: relative;}
+.o_f{overflow: hidden;}
+
+body{background: #fbfbfb;}
+
+.sidebarbox{ height: 100%; overflow:auto; }
+.metismenu,.metismenu ul{margin:0; padding: 0; list-style: none;}
+.metismenu a{padding: 12px 10px; display: block; border-bottom:1px solid #eee;  }
+.metismenu ul a{text-indent: 15px; background-color: #eee;}
+
+.contenttab{border:1px solid #eee; margin-top: 20px; border-bottom: 0; background: #fff;}
+.projecttitle{border-bottom: 1px solid #eee;    margin: 0 10px;}
+.projecttitle h2{font-size: 16px; color: #e48c08;}
+
+.toollist{overflow: hidden;border-bottom: 1px solid #eee; }
+.toollist ul{list-style: none; padding: 0; margin:0;}
+.toollist ul a{display: block; padding: 12px 0; font-size: 12px;}
+
+
+.metismenu .arrow{float:right;line-height:1.42857}[dir=rtl] .metismenu .arrow{float:left}.metismenu .glyphicon.arrow:before{content:"\e079"}.metismenu .active>a>.glyphicon.arrow:before{content:"\e114"}.metismenu .fa.arrow:before{content:"\f104"}.metismenu .active>a>.fa.arrow:before{content:"\f107"}.metismenu .ion.arrow:before{content:"\f3d2"}.metismenu .active>a>.ion.arrow:before{content:"\f3d0"}.metismenu .plus-times{float:right}[dir=rtl] .metismenu .plus-times{float:left}.metismenu .fa.plus-times:before{content:"\f067"}.metismenu .active>a>.fa.plus-times{-webkit-transform:rotate(45deg);-ms-transform:rotate(45deg);-o-transform:rotate(45deg);transform:rotate(45deg)}.metismenu .plus-minus{float:right}[dir=rtl] .metismenu .plus-minus{float:left}.metismenu .fa.plus-minus:before{content:"\f067"}.metismenu .active>a>.fa.plus-minus:before{content:"\f068"}.metismenu .collapse{display:none}.metismenu .collapse.in{display:block}.metismenu .collapsing{position:relative;height:0;overflow:hidden;-webkit-transition-timing-function:ease;-o-transition-timing-function:ease;transition-timing-function:ease;-webkit-transition-duration:.35s;-o-transition-duration:.35s;transition-duration:.35s;-webkit-transition-property:height,visibility;-o-transition-property:height,visibility;transition-property:height,visibility}
+</style>
+
+
+
+<!-- 导航 -->
+<!-- <div class="p_menu tab_parent o_f">
+	<div class="col-xs-3 tab_subset">
+    <a href="<{:U('Purchase/index',array('t'=>2))}>" class="btn-block"><span class="purindex pcolor01"></span>轮胎</a>
+  </div>
+  <div class="col-xs-3 tab_subset">
+    <a href="<{:U('Purchase/index',array('t'=>5))}>" class="btn-block"><span class="purindex pcolor05"></span>轮毂</a>
+  </div>
+  <div class="col-xs-3 tab_subset">
+    <a href="<{:U('Purchase/index',array('t'=>6))}>" class="btn-block"><span class="purindex pcolor02"></span>润滑油</a>
+  </div>
+  <div class="col-xs-3 tab_subset">
+    <a href="<{:U('Purchase/index',array('t'=>8))}>" class="btn-block"><span class="purindex pcolor03"></span>电瓶</a>
+  </div>
+  <div class="col-xs-3 tab_subset">
+    <a href="<{:U('Purchase/class_list',array('t'=>16))}>" class="btn-block"><span class="purindex pcolor04"></span>美容</a>
+  </div>
+  <div class="col-xs-3 tab_subset">
+    <a href="<{:U('Purchase/class_list',array('t'=>9))}>" class="btn-block"><span class="purindex pcolor06"></span>养护</a>
+  </div>
+  <div class="col-xs-3 tab_subset">
+    <a href="<{:U('Purchase/index',array('t'=>27))}>" class="btn-block"><span class="purindex pcolor07"></span>精品</a>
+  </div>
+  <div class="col-xs-3 tab_subset">
+    <a href="<{:U('Purchase/class_list',array('t'=>0))}>" class="btn-block"><span class="purindex pcolor08"></span>全部分类</a>
+  </div>
+
+</div> -->
+
+<div class="col-xs-12" style="padding-bottom: 20px;">
+  <div class="contenttab">
+        <div class="text-center projecttitle">
+            <h2 class="">采购分类</h2>
+        </div>
+        <div class="sidebarbox">
+          <div class="sidebar" id="sidebar">
+            <ul class="metismenu " id="menu">
+              <volist name="cl" id="c">
+                  <li <if condition="$key eq $t">class="active"</if>>
+                    <a href="#">
+                        <i class="fa fa-circle-o"></i>
+                        <{$c.c_name}>
+                        <span class="fa arrow fa-fw"></span>
+                    </a>
+                    <ul aria-expanded="false" class="collapse">
+                        <volist name="c['item']" id="ci">
+                          <li >
+                            <a href="<{:U('Purchase/index',array('t'=>$ci['id']))}>" class="present"><{$ci.class_name}> <i class="fa fa-angle-right pull-right"></i></a>
+                          </li>
+                        </volist>               
+                    </ul>
+                  </li>
+              </volist>
+              </ul>
+            
+            <!-- 导航插件 -->
+            <script type="text/javascript" src="__PUBLIC__/js/metisMenu.js"></script>
+            <script>
+              $(function () {
+                  $('#menu').metisMenu();
+                });
+            </script>
+          </div>
+      </div>
+  </div>
+  <div class="contenttab">
+        <div class="text-center projecttitle">
+            <h2 class="">车务小工具</h2>
+        </div>
+        <div class="toollist tab_parent">
+            <ul class="text-center  ">
+                <li class="col-xs-4 tab_subset"><a href="http://cdn.ycqpmall.com/new/b1.php">车灯查询</a></li>
+                <li class="col-xs-4 tab_subset"><a href="http://yugua.ycqpmall.com/index.php?m=search">雨刮查询</a></li>
+                <li class="col-xs-4 tab_subset"><a href="http://dc.ycqpmall.com/mall/">电池查询</a></li>
+                <li class="col-xs-4 tab_subset"><a href="http://rhy.ycqpmall.com/mall/">变速箱油查询</a></li>
+                <li class="col-xs-4 tab_subset"><a href="http://jy.ycqpmall.com/mall/">润滑油查询</a></li>
+                <li class="col-xs-4 tab_subset"><a href="http://hhs.ycqpmall.com/index.php?m=search">火花塞查询</a></li>
+                <li class="col-xs-4 tab_subset"><a href="http://lt.ycqpmall.com/mall/">轮胎查询</a></li>
+                <li class="col-xs-4 tab_subset"><a href="http://zspd.ycqpmall.com/mall/">正时皮带查询</a></li>
+                <li class="col-xs-4 tab_subset"><a href="http://pd.ycqpmall.com/mall/">皮带查询</a></li>
+                <li class="col-xs-4 tab_subset"><a href="http://scp.ycqpmall.com/mall/">刹车片查询</a></li>
+                <li class="col-xs-4 tab_subset"><a href="http://sg.ycqpmall.com/mall/">三格查询</a></li>
+                <li class="col-xs-4 tab_subset"><a href="http://wz.ycqpmall.com/">违章查询</a></li>
+            </ul>
+        </div>
+
+     </div>
+</div>
+
+<!--底栏-->
+<include file="Inc:purchase_bottom"/>
+
+</body>
+</html>

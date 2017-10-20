@@ -1,0 +1,24 @@
+<volist name="result" id="r" >
+    <div class="container-fluid line"></div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="Condition flex">
+                    <div class="cartxt">
+                        <{$r.user_name}>
+                    </div>
+                    <div class="cartxt">
+                        <{$r.mobile}>
+                    </div>
+                    <div class="cartxt t-r">
+                         <{$r.add_time|date="Y-m-d",###}>
+                    </div>
+                </div>
+                <div class="flex editbox">
+                    <div class="displaycar"><a href="<{:U('Biz/edit_member',array('id'=>$r['id']))}>"><i class="fa fa-edit"></i> 编辑</a></div>
+                    <div class="displaycar t-r"><a href="javascript:del_member(<{$r.id}>)"><i class="fa fa-trash-o"></i> 删除</a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</volist>

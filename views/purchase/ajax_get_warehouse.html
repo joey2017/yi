@@ -1,0 +1,51 @@
+<volist name="warehouse" id="w">
+	<div class="sift_row">
+		<div class="row_title common_model">
+			<{$w.attr_name}>
+			<span class="fa fa-caret-down pull-right"></span>
+		</div>
+		<div class="row_body">
+			<ul class="row common">
+					<!-- <li class="col-xs-6">
+						<a href="javascript:;" class="tc_project tc_choose" value="0">不限</a>
+					</li> -->
+				<volist name="w['attr_val']" id="av">
+					<li class="col-xs-6">
+						<a href="javascript:;" class="tc_project" value="<{$key}>"><{$av}></a>
+					</li>
+				</volist>					
+			</ul>
+		</div>
+	</div>
+</volist>
+<script type="text/javascript">
+
+	$(document).ready(function(){  
+
+		$(".common_model").each(function(index){
+			$(this).click(function(){
+				$(this).find('span').toggleClass('fa-caret-down').toggleClass('fa-caret-up');
+				$(this).next().toggle();
+			});	
+		});
+
+	});   
+
+	$(".common a").click(function(){ 
+		// $(this).addClass("tc_choose").parent().siblings().find('.tc_project').removeClass("tc_choose");
+		$(this).toggleClass('tc_choose');
+		var warehouse = [];
+		$(".common a").each(function(){
+			if($(this).hasClass("tc_choose") && $(this).attr('value')!=0){
+				warehouse.push($(this).attr('value'));
+			}
+		});
+
+		$('#warehouse_value').val(warehouse);
+		// currentpage=0;
+		// ajax_get_goods();
+
+	});
+
+
+</script>

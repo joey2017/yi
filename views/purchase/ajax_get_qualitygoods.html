@@ -1,0 +1,16 @@
+<volist name="qualitygoods" id="g">
+	<div class="col-xs-6 tab_subset producttab">
+		<div class="proinfo">
+			<a href="<{:U('Purchase/detail',array('id'=>$g['id']))}>" class="btn-block">
+				<img src="<{$g.thumbnail}>!purchase">
+				<p><{$g.goods_name}></p>
+				<div class="d-main">
+	    			<span class="price">￥:<{$g.price|price}></span> 
+	    			<span>/<{$g.unit}></span>
+	    			<span class="pull-right">已售 <{$g.sales}></span>
+	    		</div>
+    		</a>
+		</div>
+	</div>
+</volist>
+

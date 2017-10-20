@@ -1,0 +1,126 @@
+<include file="Inc:header"/>
+
+</head>
+
+<body>
+<script type="text/javascript" src="http://s.17cct.com/v5/js/erp/echarts.common.min.js"></script>
+<style type="text/css">
+.work_order_top{padding:5px 15px; color: #fff; font-size: 25px; position:relative;}
+.work_order_top a{color: #fff;}
+
+/*筛选框*/
+.screen_btn{ font-size: 16px;}
+.screen_btn span,.tuichuico{display: inline-block; width: 24px; height: 19px;vertical-align: middle;}
+.screen_btn span{background: url(__PUBLIC__/images/bossico.svg) no-repeat 6px 0; background-size: 76px;}
+.tuichuico{background: url(__PUBLIC__/images/bossico.svg) no-repeat -51px -1px; background-size: 95px;}
+
+.screenbox{ position: absolute; width: 100%; padding:10px; top: 50px; left: 0; color: #4C4C4C; font-size: 14px; background:#fff; display: none; border-bottom: 1px solid #eee;z-index: 90;}
+.screenbox dl{margin-bottom: 3px;}
+.screenbox dt{margin-right: 10px;line-height: 30px;}
+.screenbox dd{padding-left: 40px;}
+.screenbox a{padding:4px 10px;display: inline-block; border:1px solid #eee; color:#4C4C4C; margin-bottom: 5px;margin-right: 7px;}
+.screen_cur{background: #FF962A;border:1px solid #FF962A !important; color: #fff !important;}
+
+</style>
+
+
+<!-- 顶部筛选 刷新 -->
+<div class="container-fluid topbox">
+    <div class="row top work_order_top">
+        <a href="javascript:;" class="screen_btn"><{$n_location_name}><span></span></a>
+        <div class="screenbox">
+            <dl>
+                <dt class="pull-left">门店</dt>
+                <dd>
+                     <a href="<{:U('Biz/today_pay_type')}>" <if condition="$n_location_id eq null">class="screen_cur"</if>>全部</a>
+                  <foreach name="location_names" item="ln">
+                    <a href="<{:U('Biz/today_pay_type',array('id'=>$ln['id']))}>" <if condition="$n_location_id eq $ln['id']">class="screen_cur"</if>><{$ln.name}></a>
+                  </foreach>
+                </dd>
+            </dl>
+        </div>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $(".screen_btn").click(function(){
+                    $(".screenbox").slideToggle(200);
+                });
+            })
+        </script>
+        <a onclick="window.document.location.reload();" class="pull-right"><span class="refreshico"></span></a>
+    </div>
+</div>
+
+
+
+<div class="tab_t" style="padding:0 15px;"><h2>今日收款方式(含挂账收款)</h2></div>
+
+                
+                    <div class="panel-body">
+                        <div id="today_pay_type" style="height:400px;"></div>
+                    </div>
+
+
+
+<script type="text/javascript">
+ var today_pay_type=echarts.init(document.getElementById('today_pay_type'));
+  todaypayoption = {
+    title : {
+        text: '',
+        subtext: ''
+    },
+    dataZoom:{
+        orient:"horizontal", //水平显示
+        show:true, //显示滚动条
+    },
+    tooltip : {
+        trigger: 'axis'
+    },
+    legend: {
+            },
+    toolbox: {
+        show : true,
+        feature : {
+            dataView : {show: true, readOnly: false},
+            magicType : {show: true, type: ['line', 'bar']},
+            restore : {show: true},
+            saveAsImage : {show: true}
+        }
+    },
+    calculable : true,
+    xAxis : [
+        {
+            type : 'category',
+            data : ['现金','刷卡','会员卡','支付宝','微信','E卡','项目抵扣','优惠券','挂账']
+        }
+    ],
+    yAxis : [
+        {
+            type : 'value'
+        }
+    ],
+    series : [
+        {
+            name:'交易次数',
+            type:'bar',
+            data:[<{$tptl[1].count}>, <{$tptl[2].count}>,<{$tptl[3].count}>, <{$tptl[4].count}>, <{$tptl[5].count}>,<{$tptl[6].count}>,<{$tptl[8].count}>,<{$tptl[9].count}>,<{$tptl[7].count}>]
+        },
+        {
+            name:'今日交易',
+            type:'bar',
+            data:[<{$tptl[1].total_price}>, <{$tptl[2].total_price}>,<{$tptl[3].total_price}>, <{$tptl[4].total_price}>, <{$tptl[5].total_price}>,<{$tptl[6].total_price}>,<{$tptl[8].total_price}>,<{$tptl[9].total_price}>,<{$tptl[7].total_price}>]
+        }
+    ]
+};
+ today_pay_type.setOption(todaypayoption);
+  window.onresize = today_pay_type.resize;
+</script>
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<div class="gwbt" style="height:auto;position: fixed;bottom: 50px">
+    <a class="btn-danger" href="<{:U('Biz/shop_count',array('id'=>$n_location_id))}>"><i class="fa fa-reply"></i> 返回</a>
+</div>
+<!--底栏-->
+<include file="Inc:shop_count_bottom"/>
+</body>
+</html>

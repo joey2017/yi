@@ -1,0 +1,106 @@
+<include file="Inc:header"/>
+<style type="text/css">
+  .successico {width: 95px;height: 95px;display: inline-block;background: url(http://www.17cct.com/statics/v5/images/success.svg) no-repeat 0 0;background-size: 8rem;margin-top: 60px;}
+  .list_top{background:#e32424; overflow: hidden; padding:25px; }
+  .shico{background:url(__PUBLIC__/images/authorize.svg) no-repeat; background-size: 100px;  width: 100px;  height: 100px; margin-bottom: 25px;}
+  .msg{}
+  .msg li{list-style:none;}
+</style>
+<link rel="stylesheet" type="text/css" href="__PUBLIC__/font-awesome/css/font-awesome.min.css">
+</head>
+<body>
+<div class="alertBg" id="msgBox" style="display:none;">
+    <h4 class="alerttitle" id="alerttitle"></h4>
+    <span class="vm f20" id='alertdetail'></span>
+</div>
+<!--头部-->
+<div class="container-fluid topbox">
+    <div class="row top"><h1 style="display:none;">诚车堂汽车网</h1>
+        <div class="pg-Current">
+            <a href="<{:U('Biz/shop_count')}>"><span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span></a>
+        </div>
+        <div class="pg-Current">
+            <img src="__PUBLIC__/images/cheng.png" width="30" height="30">
+        </div>
+        <div class="pgt">
+            <a>微信消息推送授权</a>
+        </div>             
+    </div>
+</div>
+
+<if condition="$info">
+  <div class="text-center">
+    <div class="successico"></div>
+    <h3 style="font-style: normal;font-size: 26px;color: #5e5e5e;margin-bottom: 30px;">您已授权微信消息推送</h3>
+    <p class="col-xs-10 col-xs-offset-1">
+      <button class="btn btn-danger btn-block btn-lg" onclick="del()" id="del-btn">取消授权</button>
+    </p>
+  </div>
+<else/>
+  <div class="text-center">
+    <div class="list_top">
+      <div class="col-xs-12">
+        <center>
+          <div class="shico"></div>
+          <h2 style="margin:0 0 15px 0; color:#fff; font-size: 18px;">授权微信推送模板消息给您？</h2>
+        </center>
+      </div>
+    </div>
+
+  </div>
+  <div class="col-xs-12 msg" style="margin-top: 20px;margin-bottom: 20px;">
+      <ul style="margin: 0; padding:0;">
+        <li>
+          <label style="color: #a1a1a1; font-weight: normal;">
+            <input type="checkbox" checked="true" disabled="true"> 采购订单消息推送
+          </label>
+        </li>
+        <li>
+          <label style="color: #a1a1a1; font-weight: normal;">
+            <input type="checkbox" checked="true" disabled="true"> 预约订单消息推送
+          </label>
+        </li>
+      </ul>
+    </div>
+    <p class="col-xs-12" ><button class="btn btn-lg btn-block btn-warning" onclick="add()" id="add-btn">确认授权</button></p>
+</if>
+
+<!--底栏-->
+<include file="Inc:shop_count_bottom"/>
+
+<script type="text/javascript">
+  function add(){
+    $.ajax({ 
+        url:'<{:U("Biz/authorize_add")}>',
+        type:'post',
+        dataType:'json',
+        success: function(d){
+            if(d.status == 1){
+              $('#add-btn').attr('readonly',true);
+            }
+            MsgBox(d.info);  
+            if(d.data){
+              setTimeout(function() {location.href=d.data },2000);
+            }
+        }
+    }); 
+  }
+
+  function del(){
+    $.ajax({ 
+        url:'<{:U("Biz/authorize_del")}>',
+        type:'post',
+        dataType:'json',
+        success: function(d){
+            if(d.status == 1){
+              $('#del-btn').attr('readonly',true);
+            }
+            MsgBox(d.info);  
+            if(d.data){
+              setTimeout(function() {location.href=d.data },2000);
+            }
+        }
+    }); 
+  }
+</script>
+

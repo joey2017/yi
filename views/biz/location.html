@@ -1,0 +1,128 @@
+<include file="Inc:header"/>
+</head>
+
+<body>
+
+
+
+<style type="text/css">
+.list_top{background:#eeb416; overflow: hidden; padding:25px; }
+
+.disimg{ width: 64px;  height: 64px; margin-right: 10px;  border-radius: 50%; overflow: hidden; border: 4px solid #fff;}
+.disimg img,.disimg_no img{width: 100%; height: 100%;}
+.disimg_no {width: 64px;margin-right: 10px;}
+.nametitle{font-size: 22px; color: #fff; font-weight: bold;}
+
+.fxlisttitle{margin: 10px 0;  padding-bottom: 5px; border-bottom: 1px solid #eee;}
+.fxlisttitle span{display: inline-block; width: 30px; height: 30px; background-image: url(__PUBLIC__/images/distribution.svg); background-size: 148px;    vertical-align: middle;}
+.mendian{background-position:-47px 0;}
+
+.shopinfotab{list-style: none; margin: 0; padding: 0;}
+.shopinfotab li{border-bottom: 1px solid #eee;}
+.shopinfotab h3{font-size: 18px; }
+.shopinfotab i{width: 20px; color: #a9a9a9;}
+.no_record{height: 24px;  padding-top: 205px;  text-align: center;  background: url(http://s.17cct.com/v5/images/erp/empty.png) no-repeat center 20px;  background-size: 180px 180px;}
+.fontcolor b{color: #cd0000;}
+</style>
+
+<div class="list_top">
+	<div class="disimg<if condition='$location_info.preview eq null'>_no</if> pull-left"><img src="http://www.17cct.com/<if condition='$location_info.preview neq null'><{$location_info.preview}><else/>statics/v5/images/erp/logo2.png</if>"></div>
+    <h3 class="nametitle"><{$location_info.name}></h3>
+</div>
+
+<div class="shoplist col-xs-12">
+	<div class="fxlisttitle">
+		<span class="mendian"></span>
+		我的门店
+	</div>
+	<div class="col-xs-12">
+	    <form action="<{:U('Biz/location')}>" method="post" class="navbar-form" role="search" id="search_form" style="padding: 0 15px;
+    margin: 0 -15px 10px -15px;">
+	        <div class="row" style="margin-bottom: 4px;">
+	            <div class="row tab_parent">
+					<div class="col-xs-6 tab_subset"> <input type="text" class="form-control" id="start_time" name="start_time" value="<if condition='$start_time neq null'><{$start_time|date="Y-m-d",###}></if>" placeholder=" 起始时间"></div>
+	               <div class="col-xs-6 tab_subset">
+	                <input type="text" class="form-control" id="end_time" name="end_time" value="<if condition='$start_time neq null'><{$end_time|date="Y-m-d",###}></if>" placeholder=" 结束时间">
+	                </div>
+
+	            </div>
+	        </div>
+	       
+		        <div class="input-group row">   
+		            <select class="form-control" name="employee_id" onchange="submit_search()">
+		                <option value="0"><if condition="$supplier.is_authority eq 1">全部员工<else/><{$pms_supplier.account_name}></if></option>
+		                 <if condition="$employee neq null">
+			                <foreach name="employee" item="e">
+			                    <option value="<{$e.id}>" <if condition="$e.id eq $employee_id">selected</if>><{$e.u_name}></option>
+			                </foreach>
+		                </if>
+		            </select>          
+		            <span class="input-group-btn">
+		                <button type="button" class="btn btn-danger" onclick="submit_search()">搜索</button>
+		                <input type="hidden" value="1" name="is_redirect" id="is_redirect">
+		            </span>
+		        </div>
+	     
+	    </form>
+	</div>
+	<p class="fontcolor">共<b><{$count}></b>家，累计收益：<b>￥<{$price}></b></p>
+	<ul class="shopinfotab">
+	<if condition="$location neq null">
+		<volist name="location" id="l">
+			<li>
+				<h3><b><{$l.name}></b></h3>
+				<p><i class="fa fa-map-marker"></i><{$l.address}></p>
+				<p><i class="fa fa-phone"></i><{$l.mobile}></p>
+				<p><i class="fa fa-user"></i><{$l.account_name}>(发展人)</p>
+			</li>
+		</volist>
+	<else/>
+		<div class="no_record col-sm-12">暂无数据</div>
+	</if>
+		
+		
+	</ul>
+</div>
+<!-- 时间插件 start -->
+<link href="http://s.17cct.com/v5/js/time/mobiscroll_date.css" rel="stylesheet" />
+<script src="http://s.17cct.com/v5/js/time/mobiscroll_date.js" charset="gb2312"></script> 
+<script src="http://s.17cct.com/v5/js/time/mobiscroll.js"></script> 
+<script type="text/javascript">
+    $(function () {
+        var currYear = (new Date()).getFullYear();  
+        var opt={};
+        opt.date = {preset : 'date'};
+        opt.datetime = {preset : 'datetime'};
+        opt.time = {preset : 'time'};
+        opt.default = {
+            theme: 'android-ics light', //皮肤样式
+            display: 'modal', //显示方式 
+            mode: 'scroller', //日期选择模式
+            dateFormat: 'yy-mm-dd',
+            lang: 'zh',
+            showNow: true,
+            nowText: "今天",
+            startYear: currYear - 10, //开始年份
+            endYear: currYear + 10 //结束年份
+        };
+           
+        $("#start_time").mobiscroll($.extend(opt['date'], opt['default']));
+        $("#end_time").mobiscroll($.extend(opt['date'], opt['default']));
+        
+    });
+   
+    function submit_search() {
+        var start_time=$("#start_time").val(),end_time=$("#end_time").val();
+
+        if(start_time!=""&&end_time!=""){
+            var n_start_time=(new Date(start_time)).getTime()/1000,n_end_time=(new Date(end_time)).getTime()/1000;
+            if(n_start_time>n_end_time){
+                MsgBox('起始时间不能大于结束时间');   
+                return false;
+            }          
+        }
+        $('#search_form').submit();
+    }
+</script>
+</body>
+</html>

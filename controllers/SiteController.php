@@ -139,6 +139,7 @@ class SiteController extends Controller
     public function actionEntry()
     {
         $model = new EntryForm;
+        // var_dump(Yii::$app);die;
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             // 验证 $model 收到的数据
             // 做些有意义的事 ...

@@ -1,0 +1,31 @@
+  <div class="card_details box-flex">
+        <div class="deta_name"><b>订单编号：</b></div>
+        <div class="flex1" ><{$cd.order_sn}></div>
+    </div>
+    <div class="card_details box-flex">
+        <div class="deta_name"><b>服务数量：</b></div>
+        <div class="flex1"><{$cd.number}></div>
+    </div>
+    <div class="card_details box-flex">
+        <div class="deta_name"><b>下单时间：</b></div>
+        <div class="flex1"><{$cd.create_time|date="Y-m-d H:i",###}></div>
+    </div>
+    <div class="card_details box-flex">
+        <div class="deta_name"><b>服务项目：</b></div>
+        <div class="flex1"><{$cd.name}></div>
+    </div>
+    
+    <div class="card_details box-flex">
+        <div class="deta_name"><b>支付金额：</b></div>
+        <div class="flex1"><{$cd.total_price|price}>元</div>
+    </div>
+
+    <div class="gwbt">
+        <div class="col-xs-12" style="padding: 0;">
+            <if condition="$cd.confirm_time eq 0">
+                    <span class="btn-danger" style="display: block;" onclick="user_account()"><i class="fa fa-check"></i>确认验证</span>
+                 <else/>
+                 <p class="btn-info" style="margin:0">该券已于<{$cd.confirm_time|date="Y-m-d H:i:s",###}>使用</p>
+            </if>
+        </div>
+    </div> 

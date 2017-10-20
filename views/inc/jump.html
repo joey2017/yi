@@ -1,0 +1,43 @@
+<include file="Inc:header"/>
+</head>
+<body>
+<!--头部-->
+<div class="container-fluid topbox">
+    <div class="row top">
+        <div class="pg-Current">
+        	<a href="<{:U('Index/index')}>" ><span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span></a>
+        </div>
+        <div class="pg-Current">
+        	<img src="__PUBLIC__/images/cheng.png" width="30" height="30">
+        </div>
+        <div class="pgt">
+        	<a> <?php echo empty($error) ? '成功' : '错误' ;?>提示</a>
+        </div>
+    </div>
+</div>
+<div class="container-fluid line"></div>
+<div class="container-fluid" >
+	<div class="row phon">
+			<center>
+            	<p class="successp"><?php echo $message.$error; ?></p>
+                <p class="btn-wrapper" id="show"><a id="href" href="<?php echo($jumpUrl); ?>">跳转等待时间：<b id="wait"><?php echo($waitSecond); ?></b></a></p> 
+            </center>
+	</div>
+</div>
+<script type="text/javascript">
+document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+  WeixinJSBridge.call('hideToolbar');
+  WeixinJSBridge.call('hideOptionMenu');
+});
+(function(){
+var wait = document.getElementById('wait'),href = document.getElementById('href').href;
+var interval = setInterval(function(){
+    var time = --wait.innerHTML;
+    if(time <= 0) {
+        location.href = href;
+        clearInterval(interval);
+    };
+}, 1000);
+})();
+</script>
+<include file="Inc:footer"/>

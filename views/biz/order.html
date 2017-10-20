@@ -1,0 +1,73 @@
+<include file="Inc:header"/>
+</head>
+
+<body>
+<!--头部-->
+<div class="container-fluid topbox">
+    <div class="row top"><h1 style="display:none;">诚车堂汽车网</h1>
+        <div class="pg-Current">
+        	<a href="javascript:history.go(-1)" ><span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span></a>
+        </div>
+        <div class="pg-Current">
+        	<img src="__PUBLIC__/images/cheng.png" width="30" height="30">
+        </div>
+        <div class="pgt">
+        	<a>订单管理</a>
+        </div>             
+    </div>
+</div>
+<!--标题-->
+<div class="container-fluid">
+	<div class="row">
+    	<div class="all wd_2 <if condition='$status eq 0'>Underline</if>"><a href="<{:U('Biz/order',array('status'=>0))}>">全部订单</a></div>
+        <div class="all wd_2 <if condition='$status eq 1'>Underline</if>"><a href="<{:U('Biz/order',array('status'=>1))}>">未消费订单</a></div>
+        <div class="all wd_2 <if condition='$status eq -1'>Underline</if>"><a href="<{:U('Biz/order',array('status'=>-1))}>">已消费订单</a></div>        
+    </div>
+</div>
+
+<script type="text/javascript">
+        var stop=true; 
+        var currentpage=0;
+        ajaxRed()
+        $(window).scroll(function(){ 
+            totalheight = parseFloat($(window).height()) + parseFloat($(window).scrollTop()); 
+            if($(document).height() <= totalheight){ 
+                if(stop==true){ 
+                    ajaxRed();
+                } 
+            } 
+        });
+        function ajaxRed(){
+              $("#load").show();
+              stop=false;
+              var status="<{$status}>";
+              $.get("<{:U('Biz/ajax_get_order')}>",{"p":currentpage,"status":status}
+              ,function(html){ 
+                      if(html!=""){ 
+                          if(currentpage==0)
+                          {
+                            $("#order_list").html(html);
+                          } 
+                          else
+                          {
+                            $("#order_list").append(html);
+                          }
+                      }
+                      stop=true;
+                      currentpage++;
+                     $("#load").hide();  
+                 });              
+        }
+
+</script>
+
+<div id="order_list">
+   
+</div>
+<!--加载-->
+<div class="container-fluid" id="load">
+	<div class="row">
+    	<center><div style="line-height:40px;"><img src="__PUBLIC__/images/minilodging.gif">正在加载...</div></center>
+    </div>
+</div>
+<include file="Inc:footer"/>

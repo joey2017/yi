@@ -1,0 +1,619 @@
+<include file="Inc:header"/>
+</head>
+<style type="text/css">
+    .bytime_btn {
+        margin-top: -8px;
+    }
+</style>
+<body>
+<!--头部-->
+<link href="__PUBLIC__/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+<link rel="stylesheet" href="__PUBLIC__/css/carinfo.css">
+
+<div class="alertBg" id="msgBox" style="display:none;">
+    <h4 class="alerttitle" id="alerttitle"></h4>
+    <span class="vm f20" id='alertdetail'></span>
+</div>
+
+<div class="container-fluid topbox">
+    <div class="row top"><h1 style="display:none;">诚车堂汽车网</h1>
+        <div class="pg-Current">
+        	<a href="javascript:history.go(-1)" ><span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span></a>
+        </div>
+        <div class="pg-Current">
+        	<img src="__PUBLIC__/images/cheng.png" width="30" height="30">
+        </div>
+        <div class="pgt">
+        	<a>客户车辆信息</a>
+        </div>
+    </div>
+</div>
+
+
+<!--导航-->
+<div class="swiper-nav">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide"><a href="" class="newsa">客户信息</a></div>            
+            <div class="swiper-slide"><a href="javascript:MsgBox('即将上线')">客户要求</a></div>
+            <div class="swiper-slide"><a href="javascript:MsgBox('即将上线')">外观检测</a></div>
+            <div class="swiper-slide"><a href="javascript:MsgBox('即将上线')">其他检测</a></div>
+            <div class="swiper-slide"><a href="javascript:MsgBox('即将上线')">随车物品</a></div>
+            
+        </div>
+        <style type="text/css">.swiper-slide{width: auto;}</style>
+</div>
+
+<form id="add_member" name="add_member">
+
+<div class="flex Condition" >
+    <div class="carname">
+        手&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;机 
+    </div>
+    <div class="carenter">
+        <input type="text" class="bytime_btn" value="<{$m.mobile}>" id="mobile"  name="mobile" placeholder="手机号" dat="手机号"  />
+    </div>
+    <div class="relst">*</div>
+</div>
+
+<div class="flex Condition" >
+    <div class="carname">
+        姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名
+    </div>
+    <div class="carenter">
+        <input type="text" class="bytime_btn" value="<{$m.user_name}>"  id="user_name"  name="user_name" placeholder="姓名" dat="姓名"  />
+    </div>
+    <div class="relst">*</div>
+</div>
+<input type="hidden" name="user_id" id="user_id" value="<{$m.user_id}>">
+<input type="hidden" name="brand_id" id="brand_id" value="<{$m.brand_id}>">
+<input type="hidden" name="factory_id" id="factory_id" value="<{$m.factory_id}>">
+<input type="hidden" name="models_id" id="models_id" value="<{$m.models_id}>">
+<input type="hidden" name="id" id="id" value="<{$m.id}>">
+<div class="Condition">
+    <a href="" class="flex">
+        <div class="main_time">
+            生&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;日
+        </div>
+        <div class="carenter">
+           <input type="text" name="birthday" value="<{$m.birthday}>" id="birthday" class="bytime_btn" placeholder="请选择会员生日" />
+        </div>
+    </a>
+</div>
+<div class="flex Condition">
+    <div class="carname">
+        车&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;牌
+    </div>
+    <div class="carenter flex">
+        <input type="text" readonly="true" id="areabox" class="bytime_btn" value="<{$m.car_sn_1}>" name="car_sn_prev" id="car_sn_prev" placeholder="选择地区" style="width:40px">
+        <div class="Plateenter">
+            <input type="text" maxlength="5" value="<{$m.car_sn_2}>" class="bytime_btn" id="car_sn" onkeyup="$(this).val($(this).val().toUpperCase())" name="car_sn" placeholder="输入车牌后五位" dat="输入车牌后五位"    />
+        </div>
+    </div>
+</div>
+<div class="areabox">
+    <ul id="accordion3" class="accordion">
+        <volist name="prov_letter"  id="prov_letter" key="k">
+            <span class="markspan"><{$key}></span>
+            <volist name="prov_letter" id="pl" key="k1">
+                <li>
+                    <div class="link"><{$key}><i class="fa fa-angle-down"></i></div>
+                    <ul class="submenu">
+                     <volist name="pl" id="p">
+                        <li><a href="javascript:select_letter('<{$p}>')"><{$p}></a></li>
+                     </volist>
+                        
+                    </ul>
+                </li>
+            </volist>
+        </volist>
+
+    </ul>
+</div>
+<div class="Condition" >
+    <a class="flex" id="brandbox">
+        <div class="carname">
+            品牌车系
+        </div>
+        <div class="carenter" id="brand_name">
+            <{$m.factory_name}>
+        </div>
+        <div class="infoicor">
+            <i class="fa fa-angle-right"></i>
+        </div>
+    </a>
+</div>
+
+<div class="brandbox">
+  <ul id="accordion" class="accordion">
+    <volist name="brand_list"  id="brand_list" key="k">
+        <span class="markspan"><{$key}></span>
+        <volist name="brand_list" id="bl" key="k1">
+            <li>
+                <div class="link"><{$key}><i class="fa fa-angle-down"></i></div>
+                <ul class="submenu">
+                 <volist name="bl" id="b">
+                    <li><a href="javascript:select_brand(<{$b.parent_id}>,<{$b.id}>,'<{$b.name}>')"><{$b.name}></a></li>
+                 </volist>
+                    
+                </ul>
+            </li>
+        </volist>
+    </volist>
+</ul>
+</div>
+
+
+
+<div class="Condition">
+    <a class="flex" id="modelsbox">
+        <div class="carname">
+            车&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;型
+        </div>
+        <div class="carenter" id="models_name">
+            <{$m.models_name}>
+        </div>
+        <div class="infoicor">
+            <i class="fa fa-angle-right"></i>
+        </div>
+    </a>
+</div>
+<div class="modelsbox">
+  <ul id="accordion2" class="accordion">
+  
+</ul>
+</div>
+
+<div class="flex Condition">
+    <div class="main_time">
+        车价范围
+    </div>
+    <div class="carenter">
+       <select class= "" id="car_price" name="car_price">
+                <option value="0">请选择车价范围</option>
+                <volist name="price" id="p" key="k">
+                     <option value="<{$k}>" <if condition="$m.car_price eq $k">selected="selected"</if>><{$p}></option>
+               </volist>      
+            </select>
+    </div>
+</div>
+<div class="flex Condition">
+    <div class="main_time">
+        颜&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;色
+    </div>
+    <div class="carenter">
+       <select class= "" id="car_color" name="car_color">
+                <option value="0">请选择颜色</option>
+                <volist name="color" id="c" key="k">
+                     <option value="<{$c}>" <if condition="$m.car_color eq $c">selected="selected"</if>><{$c}></option>
+               </volist>      
+            </select>
+    </div>
+</div>
+
+
+
+<!--分割线-->
+<div class="container-fluid line"></div>
+
+<div class="Condition">
+    <a href="" class="flex">
+        <div class="main_time">
+            下次回访时间
+        </div>
+        <div class="carenter">
+           <input type="text"  id="next_visit_time" value="<{$m.next_visit_time}>" name="next_visit_time" class="bytime_btn" placeholder="请选择下次回访时间" />
+        </div>
+    </a>
+</div>
+
+<div class="flex Condition" >
+    <div class="carname">
+        最新里程
+    </div>
+    <div class="carenter">
+        <input type="number" class="bytime_btn" id="new_mileage" value="<{$m.new_mileage}>"  name="new_mileage" placeholder="最新里程" dat="最新里程"  />
+    </div>
+</div>
+
+<!--分割线-->
+<div class="container-fluid line"></div>
+
+<div class="Condition">
+    <a href="" class="flex">
+        <div class="main_time">
+            下次保险时间
+        </div>
+        <div class="carenter">
+           <input type="text"  id="next_insurance_time" value="<{$m.next_insurance_time}>" name="next_insurance_time" class="bytime_btn" placeholder="请选择下次保险时间"/>
+        </div>
+    </a>
+</div>
+
+<div class="flex Condition">
+    <div class="main_time">
+        保险公司
+    </div>
+    <div class="carenter">
+       <select class= "" id="insurance_company" name="insurance_company">
+                <option value="0">请选择车辆保险公司</option>
+                <volist name="insurance_company" id="ic" key="k">
+                     <option value="<{$k}>" <if condition="$m.insurance_company eq $k">selected="selected"</if>><{$ic}></option>
+               </volist>      
+            </select>
+    </div>
+</div>
+
+<!--分割线-->
+<div class="container-fluid line"></div>
+
+<div class="flex Condition">
+    <div class="main_time">
+        轮胎品牌
+    </div>
+    <div class="carenter">
+       <select class= "" id="tire_brand_id" name="tire_brand_id">
+                <option value="0">请选择轮胎品牌</option>
+                <volist name="tire_brand" id="tb" key="k">
+                     <option value="<{$tb.id}>" <if condition="$m.tire_brand_id eq $tb.id ">selected="selected"</if>><{$tb.name}></option>
+               </volist>      
+            </select>
+    </div>
+</div>
+
+<div class="flex Condition">
+    <div class="main_time">
+        速度级别
+    </div>
+    <div class="carenter">
+       <select class= "" id="speed_level" name="speed_level">
+                <option value="0">请选择速度级别</option>
+                <volist name="speed_level" id="sl">
+                     <option value="<{$sl}>" <if condition="$m.speed_level eq $sl">selected="selected"</if>><{$sl}></option>
+               </volist>      
+            </select>
+    </div>
+</div>
+
+<div class="flex Condition">
+    <div class="main_time">
+        胎&nbsp;&nbsp;面&nbsp;&nbsp;宽
+    </div>
+    <div class="carenter">
+       <select class= "" id="tread" name="tread">
+                <option value="0">请选择胎面宽</option>
+                <volist name="tread" id="t">
+                     <option value="<{$t}>" <if condition="$m.tread eq $t">selected="selected"</if>><{$t}></option>
+               </volist>      
+            </select>
+    </div>
+</div>
+
+<div class="flex Condition">
+    <div class="main_time">
+        扁&nbsp;&nbsp;平&nbsp;&nbsp;比
+    </div>
+    <div class="carenter">
+       <select class= "" id="flat_ratio" name="flat_ratio">
+                <option value="0">请选择扁平比</option>
+                <volist name="flat_ratio" id="fr">
+                     <option value="<{$fr}>" <if condition="$m.flat_ratio eq $fr">selected="selected"</if>><{$fr}></option>
+               </volist>      
+            </select>
+    </div>
+</div>
+
+<div class="flex Condition">
+    <div class="main_time">
+        轮胎直径
+    </div>
+    <div class="carenter">
+       <select class= "" id="diameter" name="diameter">
+                <option value="0">请选择轮胎直径</option>
+                <volist name="diameter" id="d">
+                     <option value="<{$d}>" <if condition="$m.diameter eq $d">selected="selected"</if>><{$d}></option>
+               </volist>      
+            </select>
+    </div>
+</div>
+
+<!--分割线-->
+<div class="container-fluid line"></div>
+
+
+<!--分割线-->
+<div class="container-fluid line"></div>
+
+<div class="Condition">
+    <a href="" class="flex">
+        <div class="main_time">
+            下次保养时间
+        </div>
+        <div class="carenter">
+           <input type="text"  id="next_maintain_time" value="<{$m.next_maintain_time}>" name="next_maintain_time" class="bytime_btn" placeholder="请选择下次保养时间" />
+        </div>
+    </a>
+</div>
+
+<div class="flex Condition" >
+    <div class="carname">
+        下次保养里程
+    </div>
+    <div class="carenter">
+        <input type="number" class="bytime_btn" id="new_mileage" value="<{$m.new_mileage}>"  name="new_mileage" placeholder="下次保养里程" dat="下次保养里程"  />
+    </div>
+</div>
+
+
+<!--分割线-->
+<div class="container-fluid line"></div>
+
+<div class="flex Condition" >
+    <div class="carname">
+        车架号(VIN)
+    </div>
+    <div class="carenter">
+        <input type="text" class="bytime_btn" id="car_frame_no" value="<{$m.car_frame_no}>" name="car_frame_no" placeholder="输入车架号" dat="输入车架号"  />
+    </div>
+</div>
+
+<div class="flex Condition" >
+    <div class="carname">
+        发动机号
+    </div>
+    <div class="carenter">
+        <input type="text" class="bytime_btn" id="car_engine_no" value="<{$m.car_engine_no}>" name="car_engine_no" placeholder="输入发动机号" dat="输入发动机号"  />
+    </div>
+</div>
+
+<div class="flex Condition" >
+    <div class="carname">
+        底&nbsp;&nbsp;盘&nbsp;&nbsp;号
+    </div>
+    <div class="carenter">
+        <input type="text" class="bytime_btn" id="chassis_sn"  value="<{$m.chassis_sn}>" name="chassis_sn" placeholder="输入底盘号" dat="输入底盘号"  />
+    </div>
+</div>
+
+<div class="flex Condition">
+    <div class="main_time">
+        排&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;量  
+    </div>
+    <div class="carenter">
+       <select class= "" id="displacement" name="displacement">
+                <option value="0">请选择排量</option>
+                <volist name="displacement" id="d" key="k">
+                     <option value="<{$key}>" <if condition="$m.displacement eq $key">selected="selected"</if>><{$d}></option>
+               </volist>      
+            </select>
+    </div>
+</div>
+
+<div class="flex Condition">
+    <div class="main_time">
+        购买年份 
+    </div>
+    <div class="carenter">
+       <select class= "" id="buy_time" name="buy_time">
+                <option value="0">请选择年分</option>
+                <volist name="years" id="y" key="k">
+                     <option value="<{$y}>" <if condition="$m.buy_time eq $y">selected="selected"</if>><{$y}></option>
+               </volist>      
+            </select>
+    </div>
+</div>
+
+<div class="Condition">
+    <a href="" class="flex">
+        <div class="main_time">
+            下次年审时间
+        </div>
+        <div class="carenter">
+           <input type="text"  id="next_annually_time" date="<{$m.next_annually_time}>" value="<{$m.next_annually_time}>" name="next_annually_time" class="bytime_btn" placeholder="请选择下次年审时间" />
+        </div>
+    </a>
+</div>
+<div class="flex Condition" >
+    <div class="carname">
+        备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注
+    </div>
+    <div class="carenter">
+        <textarea name="remarks" id="remarks" class="bytime_btn" placeholder='请填写备注信息' ><{$m.remarks}></textarea>
+    </div>
+</div>
+
+</form>
+
+<!--分割线-->
+<div class="container-fluid line"></div>
+
+
+<!--底部固定按钮-->
+<div class="container-fluid">
+    <div class="gwbt" style="height:auto;position: fixed;">
+        <a class="btn-danger" href="javascript:update_member()" ><i class="fa fa-check-square-o"></i> 保存</a>
+    </div>
+</div>
+
+<!-- 时间插件 start -->
+<link href="__PUBLIC__/css/mobiscroll.css" rel="stylesheet" />
+<link href="__PUBLIC__/css/mobiscroll_date.css" rel="stylesheet" />
+<script src="__PUBLIC__/js/mobiscroll_date.js" charset="gb2312"></script> 
+<script src="__PUBLIC__/js/mobiscroll.js"></script> 
+
+<script type="text/javascript">
+    function update_member(){
+       var mobile=$('#mobile').val(),car_sn_prev=$('#car_sn_prev').val(),car_sn=$('#car_sn').val();
+         if (!mobile.match(/^(((1[0-9]{1}[0-9]{1})|159|153)+\d{8})$/)) {
+                MsgBox('请输入正确的手机号码');
+                return false;
+        }
+        if(car_sn==''||car_sn_prev==''){
+            MsgBox('请填写车牌');
+            return false;
+        }
+        $.ajax({ 
+                url:'<{:U("Biz/update_member")}>',
+                type:'post',
+                dataType:'json',
+                data:$("form").serialize(),
+                success: function(d){
+                    MsgBox(d.info);
+                    if(d.url!='')
+                    {           
+                        setTimeout(function() {location.href=d.url },2000);
+                    }             
+                }
+        }); 
+
+    }
+
+</script>
+<script type="text/javascript">
+    $(function () {
+        var currYear = (new Date()).getFullYear();  
+        var opt={};
+        opt.date = {preset : 'date'};
+        opt.datetime = {preset : 'datetime'};
+        opt.time = {preset : 'time'};
+        opt.default = {
+            theme: 'android-ics light', //皮肤样式
+            display: 'modal', //显示方式 
+            mode: 'scroller', //日期选择模式
+            dateFormat: 'yyyy-mm-dd',
+            lang: 'zh',
+            showNow: true,
+            nowText: "今天",
+            startYear: currYear - 50, //开始年份
+            endYear: currYear + 10 //结束年份
+        };
+
+        $("#next_visit_time").mobiscroll($.extend(opt['date'], opt['default']));
+        $("#next_insurance_time").mobiscroll($.extend(opt['date'], opt['default']));
+        $("#next_annually_time").mobiscroll($.extend(opt['date'], opt['default']));
+        $("#next_maintain_time").mobiscroll($.extend(opt['date'], opt['default']));
+        $("#birthday").mobiscroll($.extend(opt['date'], opt['default']));
+        if($('#factory_id').val()!=0){
+            ajax_get_model($('#factory_id').val());
+        }
+    });
+    function select_brand(bid,fid,r){
+        if(!bid||!fid||!r){
+            msgBox('请刷新重新选择');
+            return false;
+        }
+        $('#brand_id').val(bid);
+        $('#factory_id').val(fid);
+        $('#brand_name').html(r);
+        ajax_get_model(fid);
+        $(".black").click();
+    }
+
+    function ajax_get_model(fid){
+             $.ajax({ 
+                url:'<{:U("Biz/ajax_get_models")}>',
+                type:'post',
+                dataType:'html',
+                data:{'id':fid},
+                success: function(html){
+                    if(html!='')
+                    {
+                        $('#accordion2').html(html)
+                    }
+                    else
+                    {
+                        MsgBox('查无结果');
+                    }                
+                }
+        }); 
+    }
+
+    function select_models(mid,r){
+        $('#models_id').val(mid);
+        $('#models_name').html(r);
+         $(".black").click();
+    }
+    function select_letter(r){
+        $('#areabox').val(r);
+         $(".black").click();
+    }
+</script>
+<!-- 时间插件 end -->
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<div class="black" style="top:0"></div>
+<script>
+    $(function(){
+        $(".bytime_btn").focus(function(){
+            if($(this).val()==$(this).attr("dat")){
+                $(this).val("")
+            }
+        }).blur(function(){
+            var _v=$(this).attr("dat")
+            if($(this).val()==_v || $(this).val()==''){
+                $(this).val(_v);
+            }
+        });
+    })
+</script>
+
+
+
+<!-- 点击下拉 插件 -->
+<script type="text/javascript">
+$(function() {
+    var Accordion = function(el, multiple) {
+        this.el = el || {};
+        this.multiple = multiple || false;
+
+        // Variables privadas
+        var links = this.el.find('.link');
+        // Evento
+        links.on('click', {el: this.el, multiple: this.multiple}, this.dropdown)
+    }
+    Accordion.prototype.dropdown = function(e) {
+        var $el = e.data.el;
+            $this = $(this),
+            $next = $this.next();
+
+        $next.slideToggle();
+        $this.parent().toggleClass('open');
+
+        if (!e.data.multiple) {
+            $el.find('.submenu').not($next).slideUp().parent().removeClass('open');
+        };
+    }   
+    var accordion = new Accordion($('#accordion'), false);
+    var accordion = new Accordion($('#accordion2'), false);
+    var accordion = new Accordion($('#accordion3'), false);
+});
+</script>
+
+<!--弹窗效果-->
+<script type="text/javascript">
+  $('body').css('position','relative');
+  $(document).ready(function(){
+    $(".black").click(function(){
+        $(".brandbox").slideUp(500);
+        $(".modelsbox").slideUp(500);
+        $(".areabox").slideUp(500);
+        $(".black").hide();
+    });
+    $("#brandbox").click(function(){
+        $(".brandbox").slideDown(500);
+        $(".black").show(10);
+    });
+    $("#modelsbox").click(function(){
+        $(".modelsbox").slideDown(500);
+        $(".black").show(10);
+    });
+    $("#areabox").click(function(){
+        $(".areabox").slideDown(500);
+        $(".black").show(10);
+    });
+  });
+</script>
+<!--导航拖动-->
+<script src="__PUBLIC__/js/simple-app.js"></script>
+<script src="__PUBLIC__/js/idangerous.swiper.min.js"></script>
+</body>
+</html>

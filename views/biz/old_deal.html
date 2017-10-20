@@ -1,0 +1,107 @@
+<include file="Inc:header"/>
+
+</head>
+
+<body>
+<script type="text/javascript" src="http://s.17cct.com/v5/js/erp/echarts.common.min.js"></script>
+<style type="text/css">
+.work_order_top{padding:5px 15px; color: #fff; font-size: 25px; position:relative;}
+.work_order_top a{color: #fff;}
+
+/*筛选框*/
+.screen_btn{ font-size: 16px;}
+.screen_btn span,.refreshico{display: inline-block; width: 24px; height: 19px;vertical-align: middle;}
+.screen_btn span{background: url(images/bossico.svg) no-repeat 6px 0; background-size: 35px;}
+.refreshico{background: url(images/bossico.svg) no-repeat -23px -1px; background-size: 48px;}
+
+.screenbox{ position: absolute; width: 100%; padding:10px; top: 50px; left: 0; color: #4C4C4C; font-size: 14px; background:#fff; display: none; border-bottom: 1px solid #eee;}
+.screenbox dl{margin-bottom: 3px;}
+.screenbox dt{margin-right: 10px;line-height: 30px;}
+.screenbox dd{padding-left: 40px;}
+.screenbox a{padding:4px 10px;display: inline-block; border:1px solid #eee; color:#4C4C4C; margin-bottom: 5px;}
+.screen_cur{background: #FF962A;border:1px solid #FF962A !important; color: #fff !important;}
+
+</style>
+
+
+<!-- 顶部筛选 刷新 -->
+<div class="container-fluid topbox">
+    <div class="row top work_order_top">
+        <a href="javascript:;" class="screen_btn">驰程店<span></span></a>
+        <div class="screenbox">
+            <dl>
+                <dt class="pull-left">门店</dt>
+                <dd>
+                    <a href="" class="screen_cur">全部</a>
+                    <a href="">驰程店</a>
+                    <a href="">琅东店</a>
+                </dd>
+            </dl>
+        </div>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $(".screen_btn").click(function(){
+                    $(".screenbox").slideToggle(200);
+                });
+            })
+        </script>
+        <a onclick="window.document.location.reload();" class="pull-right"><span class="refreshico"></span></a>
+    </div>
+</div>
+
+
+
+<div class="tab_t" style="padding:0 15px;"><h2>今日交易,累计交易分析</h2></div>
+
+                    <div class="panel-body">
+                        <div id="total" style="height:400px;"></div>
+                    </div>
+
+
+
+<script type="text/javascript">
+ var total=echarts.init(document.getElementById('total'));
+    totaloption = {
+        title : {
+            text: '',
+            x:'center'
+        },
+        tooltip : {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+        legend: {
+            orient: 'vertical',
+            left: 'left',
+            data: ['今天交易','历史累计']
+        },
+        series : [
+            {
+                name: '交易累计',
+                type: 'pie',
+                radius : '55%',
+                center: ['50%', '60%'],
+                data:[
+                    {value:<{$today_total}>, name:'今天交易'},
+                    {value:<{$total_deal}>, name:'历史累计'}
+                ],
+                itemStyle: {
+                    emphasis: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ]
+    };
+ total.setOption(totaloption);
+</script>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<div class="gwbt" style="height:auto;position: fixed;">
+    <a class="btn-danger" href="<{:U('Biz/shop_count')}>"><i class="fa fa-reply"></i> 返回</a>
+</div>
+
+</body>
+</html>

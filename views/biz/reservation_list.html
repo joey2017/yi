@@ -1,0 +1,132 @@
+<include file="Inc:header"/>
+
+
+<style type="text/css">
+.pgt{padding: 0;}
+.tab_parent{padding:0 10px;}
+ul{margin:0;list-style: none; padding: 0;}
+a{color: #333;}
+a:focus,a:active, a:hover{color: #333; text-decoration: none;}
+.box_flex{font-size:14px; display: -webkit-box; display: -moz-box; display: -webkit-flex; display: -moz-flex; display: -ms-flexbox; display: flex;}
+.flex1{ -webkit-box-flex: 1; -moz-box-flex: 1; -webkit-flex: 1; -ms-flex: 1; flex: 1;}
+
+body{height: 100%;background: #eee; position:relative;}
+
+.navbtn{background:#fff; }
+.navbtn a{ padding:15px 0;}
+.res_current{ color: #cd0000; border-bottom: 2px solid #cd0000;}
+
+.reserve_tab{ padding: 15px 0;}
+.resbox{background: #fff;  margin-bottom: 15px; overflow: hidden;border-top: 1px solid #f0ad4e; padding-bottom:10px;  }
+.resbox p{line-height: 47px; margin: 0;}
+.resbox td{padding: 15px 7px !important;}
+.table{margin-bottom: 10px;}
+
+.reserve_span{color: #989898;}
+.shico{ color: #ff7800; }
+
+.no_record{height: 24px;  padding-top: 205px;  text-align: center;  background: url(http://s.17cct.com/v5/images/erp/empty.png) no-repeat center 20px;  background-size: 180px 180px;}
+</style>
+
+
+</head>
+
+<body>
+<!--头部-->
+
+<!-- <div class="container-fluid topbox">
+    <div class="row top"><h1 style="display:none;">诚车堂汽车网</h1>
+       
+        <div class="pg-Current">
+        	 <a href=""><span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span></a>
+        </div>
+        <div class="pgt">
+        	<a href="<{:U('Advance/reservation_success')}>">返回</a>
+        </div>
+    </div>
+</div> -->
+
+<!--弹出提示框-->
+<div class="alertBg" id="msgBox" style="display:none;">
+    <h4 class="alerttitle" id="alerttitle"></h4>
+    <span class="vm f20" id='alertdetail'></span>
+</div>
+
+<div class="box_flex navbtn">
+	<div class="flex1 text-center"><a href="javascript:void(0);" class="btn-block res_current">全部</a></div>
+	<div class="flex1 text-center"><a href="javascript:void(0);" class="btn-block">本周</a></div>
+	<div class="flex1 text-center"><a href="javascript:void(0);" class="btn-block">本月</a></div>
+	<div class="flex1 text-center"><a href="javascript:void(0);" class="btn-block">更早</a></div>
+</div>
+
+<div class="reserve_tab">
+	<div class='tab_parent' id="reservation_list">
+
+	</div>
+
+</div>
+
+
+	<script type="text/javascript">
+		var currentpage=0;
+		ajax_get_reservation();//初始化添加商品列表
+		//滚动加载
+		$(window).scroll(function(){ 
+	        totalheight = parseFloat($(window).height()) + parseFloat($(window).scrollTop()); 
+	        if($(document).height() <= totalheight){ 
+	            if(stop==true){ 
+	            	MsgBox('正在加载...');
+	            	currentpage++;
+	                ajax_get_reservation();
+	            } 
+	        } 
+	    });
+
+	    //加载商品
+		function ajax_get_reservation(param = '全部'){
+			//var keyword=$('#keyword').val(),attr_value=$('#attr_value').val(),sort=$('#sort').val(),class_id=$('#class_id').val();
+		    $("#load").show();
+		    stop=false;
+		    $.get("<{:U('Biz/ajax_get_reservation')}>",{"p":currentpage,"qt":param}
+		  	,function(html){
+		          if(html!=""){ 
+		            if(currentpage==0) {
+		                $("#reservation_list").html(html);
+		            }else {
+		               $("#reservation_list").append(html);                                               
+		            }
+		            stop=true;                 	
+		          }else{
+		          	MsgBox('已加载全部数据');
+		          	if(currentpage==0){
+		          		$("#reservation_list").html('<div class="no_record col-sm-12">暂无数据</div>');
+		          	}                  	
+		          }                
+		         $("#load").hide();  
+		    });
+		}
+
+	$(function(){
+
+
+		//切换查看近期预约
+		$(".box_flex a").each(function(i){
+			$(this).click(function(){
+				$(".box_flex a").removeClass("res_current");
+				$(".box_flex a").eq(i).addClass("res_current");
+				var qt = $(".res_current").text();
+				
+				ajax_get_reservation(qt);
+
+			});
+		});
+
+	});
+</script>
+
+<div style="height:60px; clear:both;"></div>
+
+<!--底栏-->
+<include file="Inc:shop_count_bottom"/>
+
+<include file="Inc:footer"/>

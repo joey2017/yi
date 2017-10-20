@@ -1,0 +1,29 @@
+<volist name="goods" id="g">
+	<div class="productlist  col-xs-12">
+		<if condition="$type eq 1">
+			<a href="<{:U('SupWarehouse/detail',array('id'=>$g['id']))}>" class="box_flex">
+		<else />
+			<a href="<{:U('Purchase/detail',array('id'=>$g['id']))}>" class="box_flex">
+		</if>
+	    	<div class="leftimg">
+	    		<img src="<{$g.thumbnail}>!middle">
+	    	</div>
+	    	<div class="rightinfo flex1">
+	    		<h3><{$g.goods_name}></h3>
+	    		<div style="display: inline">
+		    		<p class="text-right"><span style="font-size:12px;margin-left:3px;float: left"><{$g.warehouse_name}></span><{$g.supplier_name}></p>
+	    		</div>
+	    		<div class="d-main">
+	    			<span class="price">￥:<{$g.price|price}></span> 
+	    			<span>/<{$g.unit}></span>
+	    			<if condition="$type eq 1">
+	    			<span class="pull-right">数量 <span style="color: #eb5211;font-size: 14px;"><{$g.stock}></span></span>
+	    			<else />
+	    			<span class="pull-right">已售 <{$g.sales}></span>
+	    			</if>
+	    		</div>
+	    	</div>
+	    </a>
+	</div>
+</volist>
+

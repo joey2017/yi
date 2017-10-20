@@ -1,0 +1,91 @@
+
+body{	background: #494A5F;	font-family: "Microsoft YaHei","宋体","Segoe UI", "Lucida Grande", Helvetica, Arial,sans-serif, FreeSans, Arimo;
+}
+.post-slide{ margin: 0 15px;}
+
+.post-slide .post-content{color: #565656;
+    background: #fff;
+    padding: 20px;
+    border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+}
+.post-slide .post-title{
+    font-size: 17px;
+    font-weight: 600;
+    margin-top: 0;
+    text-transform: capitalize;
+}
+.post-slide .post-title a{
+    display: inline-block;
+    color: #808080;
+    transition: all 0.3s ease 0s;
+}
+.post-slide .post-title a:hover{
+    color: #3d3030;
+    text-decoration: none;
+}
+.post-slide .post-description{
+    font-size: 15px;
+    color: #676767;
+    line-height: 24px;
+    margin-bottom: 14px;
+}
+.post-slide .post-bar{
+    padding: 0;
+    margin-bottom: 15px;
+    list-style: none;
+}
+.post-slide .post-bar li{
+    color: #676767;
+    padding: 2px 0;
+}
+.post-slide .post-bar li i{
+    margin-right: 5px;
+}
+.post-slide .post-bar li a{
+    display: inline-block;
+    font-size: 12px;
+    color: #808080;
+    transition: all 0.3s ease 0s;
+}
+.post-slide .post-bar li a:after{
+    content: ",";
+}
+.post-slide .post-bar li a:last-child:after{
+    content: "";
+}
+.post-slide .post-bar li a:hover{
+    color: #3d3030;
+    text-decoration: none;
+}
+.post-slide .read-more{
+    display: inline-block;
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+    background: #dc3237;
+    border-bottom-right-radius: 10px;
+    text-transform: capitalize;
+    transition: all 0.30s linear;
+}
+.post-slide .read-more:hover{
+    background: #333;
+    text-decoration: none;
+}
+.hy_kad{ padding:15px; color: #fff; border-top-right-radius: 5px; border-top-left-radius: 5px;}
+.hy_kad h3{ font-size: 26px; margin: 0; padding: 0 0 0 20px;}
+.hy_kad p{font-size:18px; padding-left: 22px; margin:7px 0;}
+.kad_bg00{background:#cd0000;}
+.kad_bg01{background:#4e9de0;}
+.kad_bg02{background:#e0b34e;}
+.kad_bg03{background:#cc5bc8;}
+
+
+.touxiagn{display: inline-block;vertical-align: middle;}
+.touxiagn img{width:64px;height:64px;border-radius: 50%; margin-right: 7px; box-shadow: none;}
+.fhbtn{bottom: 0; padding: 7px; background: #cd0000; color: #fff; display: block; position: fixed; width: 100%; text-align: center; line-height: 34px; font-size: 20px;   text-decoration: inherit; left: 0; right: 0;}
+
+.table{ border-collapse: collapse;width: 100%; max-width: 100%;}
+.table td{border: 1px solid #ddd;line-height: 1.8em; padding: 10px 4px; font-size: 14px;}
+.table td b{ color: #ff9333; margin-left: 12px; font-size: 16px;}

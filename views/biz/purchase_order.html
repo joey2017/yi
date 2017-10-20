@@ -1,0 +1,109 @@
+<include file="Inc:header"/>
+</head>
+<style type="text/css">
+  .no_record{height: 24px;  padding-top: 205px;  text-align: center;  background: url(http://s.17cct.com/v5/images/erp/empty.png) no-repeat center 20px;  background-size: 180px 180px;}
+</style>
+<body>
+<div class="alertBg" id="msgBox" style="display:none;">
+    <h4 class="alerttitle" id="alerttitle"></h4>
+    <span class="vm f20" id='alertdetail'></span>
+</div>
+<!--头部-->
+<div class="container-fluid topbox">
+    <div class="row top"><h1 style="display:none;">诚车堂汽车网</h1>
+        <div class="pg-Current">
+            <a href="<{:U('Biz/shop_count')}>"><span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span></a>
+        </div>
+        <div class="pg-Current">
+            <img src="__PUBLIC__/images/cheng.png" width="30" height="30">
+        </div>
+        <div class="pgt">
+            <a>采购订单</a>
+        </div>             
+    </div>
+</div>
+
+<!--选项卡-->
+<div class="container-fluid">
+    <div class="row">
+        <div class="all wd_1 <if condition='$t eq 1'>Underline</if>"><a href="<{:U('Biz/purchase_order')}>?t=1">已付款(<{$count.paid}>)</a></div>     
+        <div class="all wd_1 <if condition='$t eq 2'>Underline</if> "><a href="<{:U('Biz/purchase_order')}>?t=2">未付款(<{$count.nopay}>)</a></div>  
+        <div class="all wd_1 <if condition='$t eq 5'>Underline</if> "><a href="<{:U('Biz/purchase_order')}>?t=5">待确认(<{$count.noconfirm}>)</a></div>     
+        <div class="all wd_1 <if condition='$t eq 3'>Underline</if> "><a href="<{:U('Biz/purchase_order')}>?t=3">待提交(<{$count.uncommitted}>)</a></div>
+        <div class="all wd_1 <if condition='$t eq 4'>Underline</if> "><a href="<{:U('Biz/purchase_order')}>?t=4">已取消(<{$count.canceled}>)</a></div>
+    </div>
+</div>
+<script type="text/javascript">
+       var currentpage=0;   
+        $(window).scroll(function(){ 
+            totalheight = parseFloat($(window).height()) + parseFloat($(window).scrollTop()); 
+            if($(document).height() <= totalheight){ 
+                if(stop==true){ 
+                    ajaxRed();
+                } 
+            } 
+        });
+     ajaxRed();
+    function ajaxRed(){ 
+        $("#load").show();
+        stop=false;
+        $.get("<{:U('Biz/ajax_get_purchase')}>",{"p":currentpage,"t":<{$t}>}
+        ,function(html){
+                if(html!=""){ 
+                  if(currentpage==0) {
+                      $("#purchase_list").html(html);
+                  }
+                  else {                   
+                     $("#purchase_list").append(html);                                               
+                  }                   
+                 stop=true;
+                }else{
+                   MsgBox('已加载全部数据');
+                   if(currentpage==0){
+                      $("#purchase_list").html('<div class="no_record col-sm-12">暂无数据</div>');
+                    }
+                }
+                currentpage++;
+               $("#load").hide();  
+           });
+      }
+
+
+
+</script>
+
+
+<div id="purchase_list">
+    
+</div>
+
+
+<!--分割线-->
+
+<!--加载-->
+<div class="container-fluid" id="load">
+    <div class="row">
+        <div class="col-xs-12" style="margin-top:10px;">
+            <center>
+            <img src="__PUBLIC__/images/minilodging.gif" width="24" height="24" style="vertical-align:middle;"> 
+            正在加载... 
+            </center>
+        </div>
+    </div>
+</div>
+
+
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+<!--底栏-->
+<include file="Inc:purchase_bottom"/>
+
+<script type="text/javascript">
+
+document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+  WeixinJSBridge.call('hideToolbar');
+  WeixinJSBridge.call('hideOptionMenu');
+});
+</script>

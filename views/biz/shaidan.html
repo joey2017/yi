@@ -1,0 +1,300 @@
+<include file="Inc:header"/>
+</head>
+<body>
+<style type="text/css">
+.work_order_top{padding:5px 15px; color: #fff; font-size: 25px; position:relative;}
+.work_order_top a{color: #fff;}
+/*筛选框*/
+.screen_btn{ font-size: 16px;}
+.screen_btn span,.tuichuico{display: inline-block; width: 24px; height: 19px;vertical-align: middle;}
+.screen_btn span{background: url(__PUBLIC__/images/bossico.svg) no-repeat 6px 0; background-size: 76px;}
+.tuichuico{background: url(__PUBLIC__/images/bossico.svg) no-repeat -51px -1px; background-size: 95px;}
+
+.screenbox{ position: absolute; width: 100%; padding:10px; top: 50px; left: 0; color: #4C4C4C; font-size: 14px; background:#fff; display: none; border-bottom: 1px solid #eee;z-index: 90;}
+.screenbox dl{margin-bottom: 3px;}
+.screenbox dt{margin-right: 10px;line-height: 30px;}
+.screenbox dd{padding-left: 40px;}
+.screenbox a{padding:4px 10px;display: inline-block; border:1px solid #eee; color:#4C4C4C; margin-bottom: 5px;margin-right: 7px;}
+.screen_cur{background: #FF962A;border:1px solid #FF962A !important; color: #fff !important;}
+.box{margin:10px 0 0 5px; overflow:hidden;}
+.title{width:100px;font-size:16px;color:#525252;float:left;letter-spacing:7px;}
+.must{color:#F00;margin-right:5px;}
+.mr{margin-right: 18px}
+.mt{margin-top:18px;}
+.iw{width: 65%}
+</style>
+
+<!-- 顶部筛选 刷新 -->
+<div class="container-fluid topbox">
+    <div class="row top work_order_top">
+        <a href="javascript:;" class="screen_btn"><{$n_location_name}><span></span></a>
+        <div class="screenbox">
+            <dl>
+                <dt class="pull-left">门店</dt>
+                <dd>
+                    <a href="<{:U('Biz/shaidan')}>" <if condition="$n_location_id eq null">class="screen_cur"</if>>全部</a>
+                    <foreach name="location_names" item="ln">
+                        <a href="<{:U('Biz/shaidan',array('id'=>$ln['id']))}>" <if condition="$n_location_id eq $ln['id']">class="screen_cur"</if>><{$ln.name}></a>
+                    </foreach>
+                </dd>
+            </dl>
+        </div>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $(".screen_btn").click(function(){
+                    $(".screenbox").slideToggle(200);
+                });
+            })
+        </script>
+        <a onclick="window.document.location.reload();" class="pull-right"><span class="refreshico"></span></a>
+    </div>
+</div>
+
+<div class="alertBg" id="msgBox" style="display:none;">
+    <h4 class="alerttitle" id="alerttitle"></h4>
+    <span class="vm f20" id='alertdetail'></span>
+</div>
+
+<div>
+    <dd class="box">
+        <div class="title"><span class="must">*</span>标&nbsp;题：</div>
+        <div>
+            <input type="text" id="title" class="form-control iw">
+        </div>
+    </dd>
+    <dd class="box">
+        <div class="title"><span class="must">*</span>门&nbsp;店：</div>
+        <div>
+            <select id="store_id" class="form-control iw">
+                <foreach name="location_names" item="ln">
+                    <option value="<{$ln.id}>" <if condition="$n_location_id eq $ln['id']">selected="true"</if>><{$ln.name}></option>
+                </foreach>
+            </select>
+        </div>
+    </dd>
+    <dd class="box">
+        <div class="title"><span class="must">*</span>分&nbsp;类：</div>
+        <div>
+            <select name="cate1_id" id="cate1_id" class="form-control pull-left" style="width:32%;margin-right:4px;">
+                <option value="0">一级分类</option>
+                <foreach name="cate_list" item="cl">
+                    <option value="<{$cl.id}>"><{$cl.name}></option>
+                </foreach>
+            </select>
+            <select name="cate2_id" id="cate2_id" class="form-control" style="width:32%;">
+                <option value="0">二级分类</option>
+            </select>
+        </div>
+    </dd>
+    <dd class="box">
+        <div class="title"><span class="mr"></span>品&nbsp;牌：</div>
+        <div>
+            <select id="brand_id" class="form-control iw">
+                <option value="0">选择品牌</option>
+                <foreach name="brand_list" item="bl">
+                    <option value="<{$bl.id}>"><{$bl.name}></option>
+                </foreach>
+            </select>
+        </div>
+    </dd>
+    <dd class="box">
+        <div class="title"><span class="must">*</span>内&nbsp;容：</div>
+        <div>
+            <textarea id="content" class="form-control" rows="5" placeholder="晒单内容" style="width:65%;"></textarea>
+        </div>
+    </dd>
+   <dd class="box">
+        <div class="title"><span class="mr"></span>图&nbsp;片：</div>
+        <div>
+            <span id='imgs1' ck-Click='0' class="Upload-Photos"><span class="glyphicon glyphicon-plus Upload-Photos-mg"></span></span>
+            <span id='imgs2' ck-Click='0' class="Upload-Photos"><span class="glyphicon glyphicon-plus Upload-Photos-mg"></span></span>
+            <span id='imgs3' ck-Click='0' class="Upload-Photos"><span class="glyphicon glyphicon-plus Upload-Photos-mg"></span></span>
+            <span id='imgs4' ck-Click='0' class="Upload-Photos"><span class="glyphicon glyphicon-plus Upload-Photos-mg"></span></span>
+        </div>
+    </dd>
+    <dd class="box">
+        <div style="margin-left: 100px">
+            <span id='imgs5' ck-Click='0' class="Upload-Photos"><span class="glyphicon glyphicon-plus Upload-Photos-mg"></span></span>
+            <span id='imgs6' ck-Click='0' class="Upload-Photos"><span class="glyphicon glyphicon-plus Upload-Photos-mg"></span></span>
+            <span id='imgs7' ck-Click='0' class="Upload-Photos"><span class="glyphicon glyphicon-plus Upload-Photos-mg"></span></span>
+            <span id='imgs8' ck-Click='0' class="Upload-Photos"><span class="glyphicon glyphicon-plus Upload-Photos-mg"></span></span>
+        </div>
+    </dd>
+    <input type="hidden" value="0,0,0,0,0,0,0,0" name="sd_imgs" id="sd_imgs"/>
+</div>
+
+<div class="col-xs-6 mt">
+    <center>
+        <a class="btn btn-danger btn-block btn-lg" href="<{:U('Biz/shop_count',array('id'=>$n_location_id))}>"><i class="fa fa-reply"></i> 返回</a>
+    </center>
+</div>
+<div class="col-xs-6 mt">
+    <center>
+        <button type="button" class="btn btn-warning btn-block btn-lg" onclick="ajax_submit()" id="submit-btn">确认晒单</button>
+    </center>
+</div>
+
+<!--底栏-->
+<include file="Inc:shop_count_bottom"/>
+
+<script src="__PUBLIC__/js/uploader.min.js"></script>
+<script type="text/javascript">
+(function($) {
+    $.fn.uploader = function(options) {
+        var settings = {
+            size_Limit: 3182000,
+            btnid: $(this).attr('id'),
+            action_url: '',
+            input_id: 'J_img',
+            input_name: 'img',
+            showMessage: function(message) {
+                MsgBox(message)
+            },
+            onSubmit: function(id, fileName) {},
+            onComplete: function(id, fileName, result) {}
+        };
+        if (options) {
+            $.extend(settings, options);
+        }
+        new qq.FileUploaderBasic({
+            //allowedExtensions: ['jpg', 'gif', 'jpeg', 'png', 'bmp', 'pdg', 'swf'],
+            allowedExtensions: ['jpg','jpeg','png'],
+            button: document.getElementById(settings.btnid),
+            multiple: false,
+            action: settings.action_url,
+            inputName: settings.input_name,
+            sizeLimit: settings.size_Limit,
+            forceMultipart: true,
+            messages: {
+                typeError: '不允许上传的文件类型！',
+                sizeError: '文件大小不能超过{sizeLimit}！',
+                minSizeError: '文件大小不能小于{minSizeLimit}！',
+                emptyError: '文件为空，请重新选择！',
+                noFilesError: '没有选择要上传的文件！',
+                onLeave: '正在上传文件，离开此页将取消上传！'
+            },
+            showMessage: settings.showMessage,
+            onSubmit: settings.onSubmit,
+            onComplete: settings.onComplete
+        })
+    }
+})(jQuery);
+
+for(var i = 0; i < 8; i++){
+    uploader_btn('#imgs'+(i+1),i);
+    eval("var ckClick"+i+" = false");
+}
+
+//上传按钮 方法
+function uploader_btn(btn_name,btn_id){
+    var btn = $(btn_name);
+    btn.uploader({      
+        action_url: "<{:U('Review/ajaxUploadImg')}>",
+        onSubmit:function(id,fileName){     
+            if (btn.attr('ck-Click') == '1') {
+                MsgBox('上传中，请稍候');
+                return false;
+            } 
+            btn.attr('ck-Click','1');
+            btn.html('').css('padding-top','8px').append('<img src="__PUBLIC__/images/minilodging.gif">');
+        },
+        onComplete: function(id, fileName, result) {
+            if(result.status == 1){   
+                btn.attr('ck-Click','0');  
+                btn.html('').css('padding-top',0).append('<span style="display:block; width:100%; height:100%;"><img src="'+result.data.img_url+'" style="width:100%; height:100%;"></span><a href="javascript:void(0);" class="Crossed" onclick="deleteImg(this,'+btn_id+')"><span class="glyphicon glyphicon-remove-circle"></span></a>');
+                imgsVal(btn_id,'up',result.data.img_url);
+            }else{
+                btn.html('').css('padding-top',0).append('<span class="glyphicon glyphicon-plus Upload-Photos-mg"></span>');
+                btn.attr('ck-Click','0'); 
+                MsgBox(result.info);
+            }
+        }
+    });
+}
+//删除照片
+function deleteImg(obj, btn_id){
+    imgsVal(btn_id,'del','');
+    var _imgs = $(obj).parent();
+    _imgs.html('').append('<span class="glyphicon glyphicon-plus Upload-Photos-mg"></span>');
+    uploader_btn('#'+_imgs.attr('id'),btn_id);
+}
+
+//input[name=sd_imgs]值
+function imgsVal(btn_id,type,url){
+    var _imgs = $('#sd_imgs');
+    var caseImgs = _imgs.val();
+    var caseImgsArr = caseImgs.split(',');
+    if(type=='up'){
+        caseImgsArr.splice(btn_id, 1,url);
+    }else if(type=='del'){
+        caseImgsArr.splice(btn_id, 1,'0');
+    }
+    caseImgs = caseImgsArr.join(',');
+    _imgs.val(caseImgs);
+}
+
+$('#cate1_id').change(function(){
+
+    $.ajax({
+        url:"<{:U('Biz/get_cate2_list')}>",
+        type:"post",
+        data:{
+          "cate1_id":$(this).val()
+        },
+        dataType:"json",
+        success:function(data){  
+            $('#cate2_id').html(data);
+    }});
+     
+})
+
+function ajax_submit(){
+    var title = $('#title').val(),store_id = $('#store_id').val(),cate1_id = $('#cate1_id').val(),cate2_id = $('#cate2_id').val(),
+    brand_id = $('#brand_id').val(),content = $('#content').val(),sd_imgs = $('#sd_imgs').val();
+
+    if(!title || title == ''){
+        MsgBox('请输入标题');
+        return false;
+    }
+    if(cate1_id == 0 || cate1_id == '' || cate1_id == undefined){
+        MsgBox('请选择分类');
+        return false;
+    }
+    if(cate2_id == 0 || cate2_id == '' || cate2_id == undefined){
+        MsgBox('请选择二级分类');
+        return false;
+    }
+    if(!content || content == ''){
+        MsgBox('请输入晒单内容');
+        return false;
+    }
+
+    $.ajax({
+        url:"<{:U('Biz/shaidan_save')}>",
+        type:"post",
+        data:{
+          "title":title,
+          "store_id":store_id,
+          "cate1_id":cate1_id,
+          "cate2_id":cate2_id,
+          "brand_id":brand_id,
+          "content":content,
+          "sd_imgs":sd_imgs,
+        },
+        dataType:"json",
+        success:function(data){  
+            if(data.status == 1){
+                $('#submit-btn').prop('disabled',true);
+                MsgBox(data.msg);
+                setTimeout("location.href='<{:U('Store/project',array('id'=>$n_location_id))}>';", 3000);  
+            }else{
+                MsgBox(data.msg);
+            }
+    }});
+
+}
+
+</script>
+
+</body>
+</html>
