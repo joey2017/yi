@@ -1,5 +1,9 @@
-<include file="Inc:header"/>
-
+<?php
+use yii\helpers\Html;
+use yii\widgets\ActiveForm;
+use yii\helpers\Url;
+include(Yii::$app->BasePath."/views/layouts/header.php");
+?> 
 </head>
 
 
@@ -17,11 +21,11 @@
     .locate{position: relative;}
     .absolute_fix{position:absolute;}
 
-    .new_topbg{height: 220px; background:url(__PUBLIC__/images/new_stop_index.jpg) no-repeat center 100%;}
+    .new_topbg{height: 220px; background:url(<?php echo SITE_URL;?>/images/new_stop_index.jpg) no-repeat center 100%;}
     .new_topbg h1{color: #fff; font-size: 24px; margin-top: 65px;}
     .new_index_logo{padding:20px 0 0 20px;}
 
-    .new_index_icon{background: url(__PUBLIC__/images/new_stop_index_icon.svg) no-repeat;background-size: 440px; }
+    .new_index_icon{background: url(<?php echo SITE_URL;?>/images/new_stop_index_icon.svg) no-repeat;background-size: 440px; }
     .Purchase{background-position: 13px 21px;}
     .e_shop{background-position: -110px 19px;}
     .admini{background-position: -230px 19px;}
@@ -50,39 +54,39 @@
 
 <div class="new_topbg locate">
     <div class="new_index_logo">
-        <img src="__PUBLIC__/images/lodlogo2.png" width="190">
+        <img src="<?php echo SITE_URL;?>/images/lodlogo2.png" width="190">
     </div>
-    <h1 class="text-center"><{$n_location_name}></h1>
+    <h1 class="text-center"><?php $n_location_name;?></h1>
    <!--  <div class="row" style="margin-top:15px;">
-        <a href="<{:U('Biz/login_out')}>" class="btn btn-warning btn-block btn-lg">退出登录</a>
+        <a href="<?php echo Url::toRoute('Biz/login_out');?>" class="btn btn-warning btn-block btn-lg">退出登录</a>
     </div> -->
-    <a  href="<{:U('Biz/login_out')}>" class="pull-right absolute_fix tuichu"><span class="tuichuico"></span></a>
+    <a  href="<?php echo Url::toRoute('biz/login-out');?>" class="pull-right absolute_fix tuichu"><span class="tuichuico"></span></a>
 </div>
 
 
 <div class="text-center locate">
-    <img src="__PUBLIC__/images/new_stop_index_line.svg" width="100%" class="absolute_fix new_stop_index_line" >
+    <img src="<?php echo SITE_URL;?>/images/new_stop_index_line.svg" width="100%" class="absolute_fix new_stop_index_line" >
 
     <div class="col-xs-6 index_btn bottom_border">
-        <a href="<{:U('Purchase/home')}>">
+        <a href="<?php echo Url::toRoute('purchase/home');?>">
             <span class="new_index_icon Purchase"></span>
             批发采购
         </a>
     </div>
     <div class="col-xs-6 index_btn left_border bottom_border">
-        <a href="<{:U('Store/view',array('id'=>$n_location_id))}>">
+        <a href="<?php echo Url::toRoute('store/view',array('id'=>$n_location_id));?>">
             <span class="new_index_icon e_shop"></span>
             微商城
         </a>
     </div>
     <div class="col-xs-6 index_btn bottom_border">
-        <a href="<{:U('Biz/shop_count')}>">
+        <a href="<?php echo Url::toRoute('biz/shop_count');?>">
             <span class="new_index_icon admini"></span>
             门店管理
         </a>
     </div>
     <div class="col-xs-6 index_btn left_border bottom_border">
-        <a href="<{:U('Biz/entrance_more',array('id'=>$n_location_id))}>">
+        <a href="<?php echo Url::toRoute('biz/entrance_more',array('id'=>$n_location_id));?>">
             <span  class="new_index_icon more"></span>
             更多
         </a>

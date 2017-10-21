@@ -17,6 +17,7 @@ class BizController extends Controller {
 
 	//去掉默认布局
     public $layout = false;
+    // public $default = 'index';
 	//禁用表单csrf
     public $enableCsrfValidation = false;
     // public $layout = 'header.php';
@@ -32,15 +33,17 @@ class BizController extends Controller {
 				//$url = Url::toRoute(['product/view', 'id' => 42]);
 				$url = Url::toRoute('biz/login');
 				header("Location:".$url);
+		}else{
+			$account_info = $session['account_info'];
+			if($account_info['type']=='1'||$account_info['type']=='2'){
+			// var_dump($account_info);die;
+				$url = Url::toRoute(['entrance','id'=>$account_info['location_ids'][0]]);
+			// var_dump($url);die;
+				header("Location:".$url);
 			}else{
-				$account_info = $session['account_info'];
-				if($account_info['type']=='1'||$account_info['type']=='2'){
-					$url = Url::toRoute('biz/entrance');
-					header("Location:".$url);
-				}else{
-					// $this->display();
-					return $this->render('index');
-				}
+				// $this->display();
+				return $this->render('index');
+			}
 			
 		}	
 
@@ -209,117 +212,92 @@ class BizController extends Controller {
 	}
 	
 	public function actionLogin(){
-		// echo Yii::$app->BasePath;die;
+		// $url = Url::to("biz/index");
+		// var_dump($url);die;
 		$session = Yii::$app->session;
 		$cookies = Yii::$app->request->cookies;
-		//var_dump(cookie("account_password"));
 		if(!$session['account_info']){
-			// $this->assign('title','商家登录');
-			// if($cookies->has("account_name")){
-				// $cookies = Yii::$app->response->cookies;
-				// $cookies->add(new \yii\web\Cookie([
-				//     'name' => 'language',
-				//     'value' => 'zh-CN',
-				// ]));
-				// $this->assign("account_name",$cookies->get("account_name"));
-				// $this->assign("account_pwd",passport_decrypt($cookies->get("account_password"),'17cct_com_biz_login_key'));
-			// }
-
-			//$this->display();
-			// $url = Url::toRoute("biz/ajax-login");
-			$this->render('../inc/header.php');
-
+			// var_dump($session);die;
 			return $this->render('login',[
 				'title'        => '商家登录',
-				// 'url'          => $url,
 				'account_name' => $cookies->get("account_name"),
 				"account_pwd"  => passport_decrypt($cookies->get("account_password"),'17cct_com_biz_login_key')
 			]);
 		}else{
-			$url = Url::toRoute("biz/index");
+			$url = Url::toRoute("index");
 			header("Location:".$url);
 		}	
 		
 	}
 
 	public function actionAjaxLogin(){
-			// var_dump(Yii::$app->request->post());die;
-			$account_name = Yii::$app->request->post('username');
-			$account_password = Yii::$app->request->post('password');
-			if(!$account_name){
-				// $this->ajaxReturn(0,'用户名不能为空!',0);
-				return json_encode(array('status'=>0,'info'=>'用户名不能为空!','data'=>0));
-			}
-			if(!$account_password){
-				// $this->ajaxReturn(0,'密码不能为空!',0);
-				return json_encode(array('status'=>0,'info'=>'密码不能为空!','data'=>0));
-			}
+		$account_name = Yii::$app->request->post('username');
+		$account_password = Yii::$app->request->post('password');
+		if(!$account_name){
+			return json_encode(array('status'=>0,'info'=>'用户名不能为空!','data'=>0));
+		}
+		if(!$account_password){
+			return json_encode(array('status'=>0,'info'=>'密码不能为空!','data'=>0));
+		}
 
-			// $account = M("supplier_account")->where(array('account_name'=>$account_name,'is_effect'=>1,'is_delete'=>0))->find();
-			$account = SupplierAccount::findOne(['account_name' => $account_name,'is_effect'=>1,'is_delete'=>0]);
-			// $account = get_object_vars($account);
-			// var_dump($account);die;
-			// $sql        = "select * from fw_supplier_account where account_name='".$account_name."' and is_effect=1 and is_delete>0";
-			// $res        = Yii::$app->db->createCommand($sql)->queryOne();
-			// $res        = $command->queryOne();
-			if($account->account_password == md5($account_password)){
-				// $account_locations =M("supplier_account_location_link")->where(array('account_id'=>intval($account['id'])))->select();
-				$sql        = "select * from fw_supplier_account_location_link where account_id='".intval($account->id)."'";
-				// $account_locations = M("supplier_account_location_link")->where(array('account_id'=>intval($account['id'])))->select();
-				$account_locations = Yii::$app->db->createCommand($sql)->queryAll();
-				// var_dump($account_locations);die;
-				$account_location_ids = array();
-				foreach($account_locations as $row)
-				{
-					$account_location_ids[] = $row['location_id'];
+		$account = SupplierAccount::find()->where(['account_name' => $account_name, 'is_effect' => 1, 'is_delete'=>0])->one();
+		if($account->account_password == md5($account_password)){
+			$sql        = "select * from fw_supplier_account_location_link where account_id='".intval($account->id)."'";
+			$account_locations = Yii::$app->db->createCommand($sql)->queryAll();
+			$account_location_ids = array();
+			foreach($account_locations as $row)
+			{
+				$account_location_ids[] = $row['location_id'];
+			}
+			if(intval($_REQUEST['remember'])==1)
+			{
+				$cookie = Yii::$app->request->cookie;
+				// 在要发送的响应中添加一个新的 cookie
+				$cookies->add(new \yii\web\Cookie([
+						'name'   => 'account_name',
+						'value'  => $account_name,
+						'expire' => time()+3600*24*30
+				]));
+				$key = "17cct_com_biz_login_key";
+				$cookies->add(new \yii\web\Cookie([
+						'name'   => 'account_password',
+						'value'  => passport_encrypt($account_password,$key),
+						'expire' => time()+3600*24*30
+				]));
+			}
+			$account = $account->attributes; 
+			$account['location_ids'] = $account_location_ids;
+			Yii::$app->session->set('account_info',$account);
+			$d['login_time'] = time();
+			$d['login_ip']   = $_SERVER['REMOTE_ADDR'];
+			// $r=M("supplier_account")->where(array('id'=>intval($account['id'])))->save($d);
+			// $r = SupplierAccount::find()->where(['id'=>intval($account->id)])->update($d);
+			// $customer = Customer::findOne($id); $customer->email = 'james@example.com'; $customer->save();
+			$SupplierAccount = SupplierAccount::findOne(intval($account['id']));
+			$SupplierAccount->login_time = time();
+			$SupplierAccount->login_time = time();
+			$SupplierAccount->login_ip 	 = $_SERVER['REMOTE_ADDR'];
+			$r = $SupplierAccount->save();
+			// $r = SupplierAccount::find()->updateByPk(intval($account->id),$d);
+			// $connection->createCommand()->update('fw_supplier_account', ['status' => 1], $d)->execute();
+			if($account['type'] == '1'){
+				$redirect_url = Url::toRoute(['entrance','id'=>$account['location_ids'][0]]);
+				if(Yii::$app->session->get('redirect_url')){
+					$redirect_url = Yii::$app->session->get('redirect_url');
 				}
-				if(intval($_REQUEST['remember'])==1)
-				{
-					//es_cookie::set("sp_account_name",$account_name,3600*24*30);
-					$cookie = Yii::$app->request->cookie;
-					// 在要发送的响应中添加一个新的 cookie
-					$cookies->add(new \yii\web\Cookie([
-							'name'   => 'account_name',
-							'value'  => $account_name,
-							'expire' => time()+3600*24*30
-					]));
-					$key = "17cct_com_biz_login_key";
-					$cookies->add(new \yii\web\Cookie([
-							'name'   => 'account_password',
-							'value'  => passport_encrypt($account_password,$key),
-							'expire' => time()+3600*24*30
-					]));
-					// cookie('account_password',trim(passport_encrypt($account_password,$key)),3600*24*30);
-					//es_cookie::set("sp_account_password",passport_encrypt($account_password,$key),3600*24*30);
-				}
-				// var_dump($account);die;
-				$account->location_ids =  $account_location_ids;
-				Yii::$app->session->set('account_info',$account);
-				$d['login_time'] = time();
-				$d['login_ip']   = $_SERVER['REMOTE_ADDR'];
-				// $r=M("supplier_account")->where(array('id'=>intval($account['id'])))->save($d);
-				$r = SupplierAccount::find()->where(['id'=>intval($account->id)])->save($d);
-				if($account->type == '1'){
-					$redirect_url = Url::toRoute('biz/entrance');
-					if(session('redirect_url')){
-						$redirect_url = Yii::$app->session->get('redirect_url');
-					}
-					// $this->ajaxReturn(0,$redirect_url,1);
-					return json_encode(array('status'=>1,'info'=>$redirect_url,'data'=>0));
-				}
-				// $this->ajaxReturn(0,U('Biz/index'),1);
-				return json_encode(array('status'=>1,'info'=>Url::toRoute('biz/index'),'data'=>0));
+				return json_encode(array('status'=>1,'info'=>$redirect_url,'data'=>0));
+			}
+			return json_encode(array('status'=>1,'info'=>Url::toRoute('biz/index'),'data'=>0));
 
-			}else{
-				// $this->ajaxReturn(0,'用户名或密码错误!',0);
-				return json_encode(array('status'=>0,'info'=>'用户名或密码错误!','data'=>0));
-			}		
-	
+		}else{
+			return json_encode(array('status'=>0,'info'=>'用户名或密码错误!','data'=>0));
+		}		
+
 	}
 
-	public function actionlogin_out(){
-		session('account_info',null);
-		$this->redirect("Biz/login","退出成功");
+	public function actionLoginOut(){
+		Yii::$app->session->set('account_info',null);
+		$this->redirect(Url::toRoute("login"));
 	}
 
 	public function actionorder(){		
@@ -789,26 +767,30 @@ class BizController extends Controller {
 
 	}
 
-    public function actionentrance(){
-        if(!session('account_info')){
-            header("Location:".U("Biz/login"));
+    public function actionEntrance($id){
+    	$session = Yii::$app->session;
+        if(!$session['account_info']){
+            header("Location:".Url::toRoute("login"));
         }
-        $account_info=session('account_info');
+        $account_info = $session['account_info'];
 
-        $id=intval($_REQUEST['id']);
+        $id = intval($_REQUEST['id']);
 
-
-        $this->assign('title','车堂盛世-系统托管,解放老板');
-
-        if($account_info['allow_delivery']=='1'){
-            $w=" in(".implode(',', $account_info['location_ids']).")";
+        if($account_info['allow_delivery'] == '1'){
+            $w = " in(".implode(',', $account_info['location_ids']).")";
         }else{
             $w=" =".$account_info['location_ids'][0];
         }
 
         //门店名称
-        $location_names=M()->query("select id,name from fw_supplier_location where id".$w);
-
+  		// $location_names = (new \yii\db\Query())
+		// ->select('id, name')
+		// ->from('fw_supplier_location')
+		// ->where("id".$w)
+		// ->all();
+		$location_names = Yii::$app->db->createCommand('select id,name from fw_supplier_location where id'.$w)
+           ->queryAll();
+        // var_dump($location_names);die;
         if($account_info['allow_delivery']=='1'){
             $n_location_name='全部门店';
         }else{
@@ -831,11 +813,7 @@ class BizController extends Controller {
         if(!$n_location_id){
             $n_location_id=$account_info['location_ids'][0];
         }
-        $this->assign("n_location_id",$n_location_id);
-        $this->assign("location_names",$location_names);
-        $this->assign("n_location_name",$n_location_name);
-
-	    $this->display();
+	    return $this->render('entrance',['title'=>'车堂盛世-系统托管,解放老板','n_location_id'=>$n_location_id,'n_location_name'=>$n_location_name]);
     }
     public function actionentrance_more(){
         $id=intval($_REQUEST['id']);

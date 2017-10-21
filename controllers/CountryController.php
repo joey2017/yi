@@ -63,6 +63,7 @@ class CountryController extends Controller
         ->offset($pagination->offset)
         ->limit($pagination->limit)
         ->all();
+        // $countries['attr'] = 15;
         // var_dump($countries);die;
         return $this->render('list', [
             'countries' => $countries,

@@ -134,7 +134,7 @@ $(function(){
             } else {
                 MsgBox(data.info);
             }
-        })
+        },'json');
         
     });
 });

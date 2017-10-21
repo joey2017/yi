@@ -1,4 +1,9 @@
-<include file="Inc:header"/>
+<?php
+use yii\helpers\Html;
+use yii\widgets\ActiveForm;
+use yii\helpers\Url;
+include(Yii::$app->BasePath."/views/layouts/header.php");
+?> 
 </head>
 
 <body>
@@ -9,7 +14,7 @@
         	<a href="javascript:history.go(-1)" ><span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span></a>
         </div>
         <div class="pg-Current">
-        	<img src="__PUBLIC__/images/cheng.png" width="30" height="30">
+        	<img src="<?php echo SITE_URL;?>/images/cheng.png" width="30" height="30">
         </div>
         <div class="pgt">
         	<a>商家入口</a>
@@ -53,4 +58,6 @@
     </div>   
     <a class="btn btn-danger btn-block " href="<{:U('Biz/login_out')}>" role="button" style="margin-top: 35px;">退出</a>
 </div>    
-<include file="Inc:footer"/>
+<?php 
+include(Yii::$app->BasePath."/views/layouts/footer.php");
+;?>
