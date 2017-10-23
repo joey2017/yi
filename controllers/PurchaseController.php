@@ -1,26 +1,30 @@
 <?php
+namespace app\controllers;
 
-class PurchaseAction extends Action {
-
+use Yii;
+use yii\data\Pagination;
+use yii\web\Controller;
+use yii\web\NotFoundHttpException;
+use yii\filters\VerbFilter;
+use yii\helpers\Url;
+use yii\db\ActiveRecord;
+use app\models\SupplierAccount;
+class PurchaseController extends Controller {
+	//取消默认布局
+	public $layout = false;
 	//采购主页
-	public function home(){
-
-			if(!session('account_info')){				
-				session('redirect_url',U('Purchase/home'));
-				header("Location:".U("Biz/login"));
-			}else{
-			
-				// $qualitygoods=M('pms_goods')->field('id,goods_name,thumbnail,sales,price,promotion_price,unit')->where('is_del=0 and is_sale=1 and price>0 and is_top=1')->order('supplier_id asc')->limit(8)->select();
-
-				// foreach ($qualitygoods as $k => $v) {
-				// 	if($v['promotion_price']>0){
-				// 		$qualitygoods[$k]['price']=$v['promotion_price'];
-				// 	}
-				// }
-				$this->assign('title','诚车堂-订货管理小助手！');
-				//$this->assign('qualitygoods',$qualitygoods);
-				$this->display();
-			}
+	public function actionHome(){
+		$session = yii::$app->session;
+		// var_dump($session);exit;	
+		if(!$session['account_info']){				
+			$session->set('redirect_url',Url::toRoute('home'));
+			header("Location:".Url::toRoute("biz/login"));
+		}else{
+			// $this->assign('title','诚车堂-订货管理小助手！');
+			// $this->display();
+			// var_dump(22);exit;
+			return $this->render('home',['title'=>'诚车堂-订货管理小助手！']);
+		}
 		
 	}
 
@@ -109,8 +113,9 @@ class PurchaseAction extends Action {
 
 
 	//获取商品
-	public function ajax_get_goods(){
+	public function actionAjaxGetGoods(){
 
+		var_dump(Yii::$app->request);die;
 		$index_search = isset($_REQUEST['index_search'])?intval($_REQUEST['index_search']):0;//首页搜索条件
 		$class_id = isset($_REQUEST['class_id'])?intval($_REQUEST['class_id']):2;//默认轮胎分类id
 		$keyword = isset($_REQUEST['keyword'])?trim($_REQUEST['keyword']):'';

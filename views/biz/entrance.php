@@ -56,7 +56,7 @@ include(Yii::$app->BasePath."/views/layouts/header.php");
     <div class="new_index_logo">
         <img src="<?php echo SITE_URL;?>/images/lodlogo2.png" width="190">
     </div>
-    <h1 class="text-center"><?php $n_location_name;?></h1>
+    <h1 class="text-center"><?php echo $n_location_name;?></h1>
    <!--  <div class="row" style="margin-top:15px;">
         <a href="<?php echo Url::toRoute('Biz/login_out');?>" class="btn btn-warning btn-block btn-lg">退出登录</a>
     </div> -->
