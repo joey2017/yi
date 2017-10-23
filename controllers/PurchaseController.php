@@ -1,31 +1,29 @@
 <?php
+namespace app\controllers;
 
-class PurchaseAction extends Action {
-
+use Yii;
+use yii\data\Pagination;
+use yii\web\Controller;
+use yii\web\NotFoundHttpException;
+use yii\filters\VerbFilter;
+use yii\helpers\Url;
+use yii\db\ActiveRecord;
+class PurchaseController extends Controller {
+	public $layout = false;
 	//采购主页
-	public function home(){
-
-			if(!session('account_info')){				
-				session('redirect_url',U('Purchase/home'));
-				header("Location:".U("Biz/login"));
+	public function actionHome(){
+			$session = Yii::$app->session;
+			if(!$session['account_info']){				
+				$session->set('redirect_url',Url::toRoute('home'));
+				header("Location:".Url::toRoute("biz/login"));
 			}else{
-			
-				// $qualitygoods=M('pms_goods')->field('id,goods_name,thumbnail,sales,price,promotion_price,unit')->where('is_del=0 and is_sale=1 and price>0 and is_top=1')->order('supplier_id asc')->limit(8)->select();
-
-				// foreach ($qualitygoods as $k => $v) {
-				// 	if($v['promotion_price']>0){
-				// 		$qualitygoods[$k]['price']=$v['promotion_price'];
-				// 	}
-				// }
-				$this->assign('title','诚车堂-订货管理小助手！');
-				//$this->assign('qualitygoods',$qualitygoods);
-				$this->display();
+				return $this->render('home',['title'=>'诚车堂-订货管理小助手！']);
 			}
 		
 	}
 
 	//采购商品列表
-	public function index()
+	public function actionIndex()
 	{
 			if(!session('account_info')){				
 				session('redirect_url',U('Purchase/index'));
@@ -63,7 +61,7 @@ class PurchaseAction extends Action {
 	}
 
 	//精品推荐列表
-	public function ajax_get_qualitygoods(){
+	public function actionAjaxGetQualityGoods(){
 		$page = intval($_REQUEST['p']);
 		$limit =($page*8).",8";
 
@@ -79,7 +77,7 @@ class PurchaseAction extends Action {
 		echo $html=$this->fetch();
 	}
 
-	public function class_list(){
+	public function actionClassList(){
 		$t=intval($_REQUEST['t']);
 		$list=M('pms_class')->where('is_del=0')->order('sort asc')->select();
 		foreach ($list as $k => $v) {
@@ -96,7 +94,7 @@ class PurchaseAction extends Action {
 	}
 
 	//首页搜索
-	public function search(){
+	public function actionSearch(){
 		if(!session('account_info')){			
 			session('redirect_url',U('Purchase/search'));
 			header("Location:".U("Biz/login"));
@@ -109,7 +107,7 @@ class PurchaseAction extends Action {
 
 
 	//获取商品
-	public function ajax_get_goods(){
+	public function actionAjaxGetGoods(){
 
 		$index_search = isset($_REQUEST['index_search'])?intval($_REQUEST['index_search']):0;//首页搜索条件
 		$class_id = isset($_REQUEST['class_id'])?intval($_REQUEST['class_id']):2;//默认轮胎分类id
@@ -175,7 +173,7 @@ class PurchaseAction extends Action {
 	}
 
 	//获取分类属性
-	public function ajax_get_attr(){
+	public function actionAjaxGetAttr(){
 
 		//默认轮胎id
 		$class_id = isset($_REQUEST['class_id'])?intval($_REQUEST['class_id']):2;
@@ -191,7 +189,7 @@ class PurchaseAction extends Action {
 	}
 
 	//采购商品详情
-	public function detail()
+	public function actionDetail()
 	{
 		$id=intval($_GET['id']);
 		if(!session('account_info')){
@@ -284,7 +282,7 @@ class PurchaseAction extends Action {
 	}
 
 	//加入购物车
-	public function add_card(){
+	public function actionAddCard(){
 		$cart['goods_id']=intval($_POST['goods_id']);
 		$goods_info=M('pms_goods')->field('id,goods_name,price,supplier_id,promotion_price')->where('is_del=0 and id=0'.$cart['goods_id'])->find();
 	
@@ -358,7 +356,7 @@ class PurchaseAction extends Action {
 	}
 
 	//购物车管理
-	public function cart(){
+	public function actionCart(){
 
 		$location_id=$this->get_location_ids();
 
@@ -387,7 +385,7 @@ class PurchaseAction extends Action {
 
 
 	//修改购物车
-	public function modify_cart(){
+	public function actionModifyCart(){
 		
 		$id=intval($_POST['id']);//修改记录id
 		$location_id=intval($this->get_location_ids());
@@ -436,7 +434,7 @@ class PurchaseAction extends Action {
 	}
 
 	//删除购物车
-	public function delete_cart(){
+	public function actionDeleteCart(){
 		$id=intval($_POST['id']);
 
 		if(!$id){
@@ -464,7 +462,7 @@ class PurchaseAction extends Action {
 	}
 
 	//检查订单
-	public function check_order(){
+	public function actionCheckOrder(){
 
 		if(!session('account_info')){
 			session('redirect_url',U('Purchase/check_order'));
@@ -523,7 +521,7 @@ class PurchaseAction extends Action {
 
 
 	//创建订单
-	public function create_order(){
+	public function actionCreateOrder(){
 
 		$location_id=$this->get_location_ids();
 
@@ -680,7 +678,7 @@ class PurchaseAction extends Action {
 	}
 
 	//订单信息
-	public function order(){
+	public function actionOrder(){
 		$id=intval($_REQUEST['id']);
 		$t=trim($_REQUEST['t']);
 		$location_id=$this->get_location_ids();
@@ -703,7 +701,7 @@ class PurchaseAction extends Action {
 	}
 
 	//确认订单
-	public function confirm_order(){
+	public function actionconfirm_order(){
 
 		$id = intval($_REQUEST['id']);
 		$location_id=intval($this->get_location_ids());
@@ -722,7 +720,7 @@ class PurchaseAction extends Action {
 	}
 
 	//收货
-	public function receipt_goods(){
+	public function actionreceipt_goods(){
 		$id=intval($_REQUEST['id']);
 		$t=trim($_REQUEST['t']);
 		$location_id=$this->get_location_ids();
@@ -742,7 +740,7 @@ class PurchaseAction extends Action {
 	/**
 	* 获得订单状态
 	**/
-	private function get_order_status($status_num){
+	private function actionget_order_status($status_num){
 
 		switch ($status_num) {
 			case 1:
@@ -770,7 +768,7 @@ class PurchaseAction extends Action {
 
 
 	//确认收货
-	public function confirm_receipt(){
+	public function actionconfirm_receipt(){
 
 		$id = intval($_REQUEST['id']);
 		$location_id=intval($this->get_location_ids());
@@ -805,7 +803,7 @@ class PurchaseAction extends Action {
 	/**
 	* 给供应商发送微信消息
 	**/
-	private function send_supplier_wx_msg($wxid,$order_sn,$location_name,$type,$name=''){
+	private function actionsend_supplier_wx_msg($wxid,$order_sn,$location_name,$type,$name=''){
 
 		if ($type == 1) {
 			$first = '"'.$location_name.'"已确认订单，请按流程快速操作！';
@@ -833,7 +831,7 @@ class PurchaseAction extends Action {
 	}
 
 	//发送模板
-	private function send_template_info($json){
+	private function actionsend_template_info($json){
 		
 		    $access_token  = $this->get_sj_acc_token();
 			$get_token_url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=".$access_token;			
@@ -851,7 +849,7 @@ class PurchaseAction extends Action {
 	/**
 	* 获取诚车堂商户版access_token
 	**/
-	private function get_sj_acc_token()
+	private function actionget_sj_acc_token()
 	{
 		$ch = curl_init();
 		$timeout = 5;
@@ -865,7 +863,7 @@ class PurchaseAction extends Action {
 	}
 
 	//线下支付
-	public function offline_pay(){
+	public function actionoffline_pay(){
 
 		$id = intval($_REQUEST['id']);
 		$pay_mode = intval($_POST['pay_mode']);
@@ -975,7 +973,7 @@ class PurchaseAction extends Action {
 	}
 
 	//支付回调页面
-	public function pay_back()
+	public function actionpay_back()
 	{
 		$id = intval($_REQUEST['id']);
 		$type=trim($_REQUEST['type']);
@@ -1027,7 +1025,7 @@ class PurchaseAction extends Action {
 	/**
 	* 采购支付方式
 	**/
-	private function get_pay_type($means_of_payment,$type){
+	private function actionget_pay_type($means_of_payment,$type){
 		if($type == 1){
 			$pay_type = '(现金挂账结算)';
 		}elseif ($type == 2) {
@@ -1064,7 +1062,7 @@ class PurchaseAction extends Action {
 
 
 	//地址列表
-	public function address_list(){
+	public function actionaddress_list(){
 
 		$location_id = $this->get_location_ids();
 
@@ -1078,7 +1076,7 @@ class PurchaseAction extends Action {
 	}
 
 	//地址添加
-	public function address_add(){
+	public function actionaddress_add(){
 		$r=intval($_GET['r']);
 		
 		$province_list =M('delivery_region')->where('region_level=2')->select();	
@@ -1092,7 +1090,7 @@ class PurchaseAction extends Action {
 	}
 
 	//ajax添加地址
-	public function ajax_address_add(){
+	public function actionajax_address_add(){
 
 		if($_POST['user_name'] && $_POST['province'] && $_POST['city'] && $_POST['area'] && $_POST['address'] && $_POST['tel']){
 
@@ -1133,7 +1131,7 @@ class PurchaseAction extends Action {
 	}
 
 	//ajax修改地址
-	public function address_edit(){
+	public function actionaddress_edit(){
 
 		$id = intval($_GET['id']);
 		
@@ -1183,7 +1181,7 @@ class PurchaseAction extends Action {
 	}
 
 	//ajax修改地址保存
-	public function ajax_address_save(){
+	public function actionajax_address_save(){
 
 		if($_POST['id'] && $_POST['user_name'] && $_POST['province'] && $_POST['city'] && $_POST['area'] && $_POST['address'] && $_POST['tel']){
 
@@ -1221,7 +1219,7 @@ class PurchaseAction extends Action {
 	}
 
 	//ajax删除地址
-	public function ajax_address_del(){
+	public function actionajax_address_del(){
 
 		$id = intval($_POST['id']);
 
@@ -1241,7 +1239,7 @@ class PurchaseAction extends Action {
 	}
 
 	//ajax设置默认地址
-	public function ajax_set_default(){
+	public function actionajax_set_default(){
 
 		$id = intval($_POST['id']);
 		
@@ -1269,7 +1267,7 @@ class PurchaseAction extends Action {
 	}
 
 	//根据pid获得地区
-	public function get_area(){
+	public function actionget_area(){
 		$id = intval($_POST['id']);
 		$type = intval($_POST['type']);
 
@@ -1301,7 +1299,7 @@ class PurchaseAction extends Action {
 	* @param 	$supplier_id 	 供应商id
 	* @return 	$location_coupon 能使用的优惠券列表
 	*/
-	private function get_coupon($goods_id,$price,$supplier_id){
+	private function actionget_coupon($goods_id,$price,$supplier_id){
 
 		//查找本门店在该供应商的优惠券列表
 		$location_coupon =M()->query("select id,goods_ids,full_money,discount_money from fw_pms_location_coupon where location_id=".intval($this->get_location_ids())." and supplier_id=".$supplier_id." and num>0 and (unix_timestamp() between start_time and end_time)"); 
@@ -1347,7 +1345,7 @@ class PurchaseAction extends Action {
 	* @param 	$supplier_id 	供应商id
 	* @return 	$act_rule_list 	可使用的供应商活动规则列表
 	*/
-	private function get_activity($goods_id,$price,$supplier_id){
+	private function actionget_activity($goods_id,$price,$supplier_id){
 		
 		//查找符合的有效期内的供应商活动
 		$act_list =M()->query("select id,act_name,goods_ids,act_type from fw_pms_activity where supplier_id=".$supplier_id." and is_del=0 and (unix_timestamp() between start_time and end_time)");
@@ -1398,7 +1396,7 @@ class PurchaseAction extends Action {
 	* @param 	$is_all_val    		全部商品/部分商品
 	* @return 	$act_rule_list 		可使用的供应商活动规则列表
 	*/
-	private function get_act_rule($act_id,$act_store_price,$act_type,$is_all_val){
+	private function actionget_act_rule($act_id,$act_store_price,$act_type,$is_all_val){
 
 		//金额满足能使用的规则
 		if($act_type == 1 || $act_type == 2){//满减、满折
@@ -1457,7 +1455,7 @@ class PurchaseAction extends Action {
 	* @param 	$datas 		 二维数组，键值是供应商id。包含goods_id数组和对应的price小计数组
 	* @return 	$new_datas	 返回二维数组，键值是供应商id。包含原始总金额、总金额、优惠总金额、参与活动金额、活动id、门店优惠券id
 	*/
-	private function use_act_coupon($act_rule_id,$coupon_ids,$datas){
+	private function actionuse_act_coupon($act_rule_id,$coupon_ids,$datas){
 
 		// 1.参与活动
 		if($act_rule_id){
@@ -1582,7 +1580,7 @@ class PurchaseAction extends Action {
 	}
 
 	//判断商品库存
-	public function goods_stock_info($goods_id,$goods_num){
+	public function actiongoods_stock_info($goods_id,$goods_num){
 
 		$location_id=$this->get_location_ids();
 
@@ -1599,14 +1597,14 @@ class PurchaseAction extends Action {
 	}
 
 	//获取门店购物车中的商品数量
-	public function get_location_cart_info(){
+	public function actionget_location_cart_info(){
 		$location_id=$this->get_location_ids();		
 		$info=M()->query("select sum(number) as number,sum(price*number) as total_price from fw_pms_erp_cart where location_id=".$location_id." limit 1");
 		return $info[0];
 	}
 
 	//返回当前登录门店id
-	public function get_location_ids(){
+	public function actionget_location_ids(){
 		$account_info=session('account_info');
 		return $account_info['location_ids'][0];
 	}

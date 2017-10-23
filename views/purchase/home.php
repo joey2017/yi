@@ -1,4 +1,9 @@
-<include file="Inc:header"/>
+<?php
+use yii\helpers\Html;
+use yii\widgets\ActiveForm;
+use yii\helpers\Url;
+include(Yii::$app->BasePath."/views/layouts/header.php");
+?> 
 
 </head>
 
@@ -20,12 +25,12 @@ body{position: relative;}
 /*搜索条*/
 .topsearch{height: 48px; padding: 6px 10px;z-index: 2;position:absolute;}
 .uearbtn{line-height: 34px;}
-.purchasesvg{background-image: url(__PUBLIC__/images/user_center.svg); background-repeat: no-repeat;}
+.purchasesvg{background-image: url(<?php echo SITE_URL;?>/images/user_center.svg); background-repeat: no-repeat;}
 .uearbtn a{color: #fff; margin-right: 8px;}
 .uearbtn a span{width: 15px; height: 24px; display: inline-block; background-position: 0px -31px; background-size: 30px;
     vertical-align: middle;}
 .searchtab{position: relative; width: 100%; height: 36px; border-radius: 5px; margin-right:10px; }
-.searchtab span{position: absolute; width: 30px; height: 30px; display: block; top: 2px; left: 2px; background:url(__PUBLIC__/images/searchico.svg) no-repeat  2px 4px; background-size: 22px;}
+.searchtab span{position: absolute; width: 30px; height: 30px; display: block; top: 2px; left: 2px; backgroundUrl::toRouterl(<?php echo SITE_URL;?>/images/searchico.svg) no-repeat  2px 4px; background-size: 22px;}
 .searchtab input{border:0; background: #fff; background: rgba(255, 255, 255, 0.75); filter: alpha(opacity=75); text-indent: 1em;}
 .searchbtn{width: 55px; height: 36px;}
 .searchbtn button{width: 100%; height: 33px;background: #fff; background: rgba(255, 255, 255, 0.75); filter: alpha(opacity=75);  border:0; color: #cc830c; border-radius: 3px; font-size: 12px;}
@@ -43,7 +48,7 @@ body{position: relative;}
 
 
 /*导航*/
-.purindex{background-image: url(__PUBLIC__/images/purindex.svg);background-repeat: no-repeat;background-size: 207px;}
+.purindex{background-image: url(<?php echo SITE_URL;?>/images/purindex.svg);background-repeat: no-repeat;background-size: 207px;}
 .p_menu{margin: 15px 0 0 0;}
 .p_menu .tab_subset{margin-bottom: 15px;}
 .p_menu a{text-align: center;font-size: 12px;}
@@ -70,7 +75,7 @@ body{position: relative;}
 
 <div class="topsearch col-xs-12 box_flex">
 	<div class="uearbtn">
-		<a href="<{:U('Biz/shop_count')}>" class="btn-block"><span class="purchasesvg"></span> 用户中心</a>
+		<a href="<?=Url::toRoute('biz/shop_count')?>" class="btn-block"><span class="purchasesvg"></span> 用户中心</a>
 	</div>
 	<div class="flex1 searchtab">
 		<span></span>
@@ -92,7 +97,7 @@ body{position: relative;}
 			MsgBox('请输入关键词搜索');
 			return false;
 		}
-		window.location.href="<{:U('Purchase/search')}>?keyword="+k;
+		window.location.href="<?=Url::toRoute('purchase/search')?>?keyword="+k;
 	})
 </script>
 
@@ -109,8 +114,8 @@ body{position: relative;}
      <div class="swiper-pagination"></div>
 </div>
 
-<link rel="stylesheet" href="__PUBLIC__/css/swiper.min.css">
-<script type="text/javascript" src="__PUBLIC__/js/swiper.min.js"></script>
+<link rel="stylesheet" href="<?php echo SITE_URL;?>/css/swiper.min.css">
+<script type="text/javascript" src="<?php echo SITE_URL;?>/js/swiper.min.js"></script>
 <script>
     var swiper = new Swiper('.swiper-container', {
         pagination: '.swiper-pagination',
@@ -126,31 +131,31 @@ body{position: relative;}
 <!-- 导航 -->
 <div class="p_menu tab_parent o_f">
 	<div class="col-xs-3 tab_subset">
-		<a href="<{:U('Purchase/index',array('t'=>2))}>" class="btn-block"><span class="purindex pcolor01"></span>轮胎</a>
+		<a href="<?=Url::toRoute('purchase/index',array('t'=>2))?>" class="btn-block"><span class="purindex pcolor01"></span>轮胎</a>
 	</div>
 	<div class="col-xs-3 tab_subset">
-		<a href="<{:U('Purchase/index',array('t'=>5))}>" class="btn-block"><span class="purindex pcolor05"></span>轮毂</a>
+		<a href="<?=Url::toRoute('purchase/index',array('t'=>5))?>" class="btn-block"><span class="purindex pcolor05"></span>轮毂</a>
 	</div>
 	<div class="col-xs-3 tab_subset">
-		<a href="<{:U('Purchase/index',array('t'=>6))}>" class="btn-block"><span class="purindex pcolor02"></span>润滑油</a>
+		<a href="<?=Url::toRoute('purchase/index',array('t'=>6))?>" class="btn-block"><span class="purindex pcolor02"></span>润滑油</a>
 	</div>
 	<div class="col-xs-3 tab_subset">
-		<a href="<{:U('Purchase/index',array('t'=>8))}>" class="btn-block"><span class="purindex pcolor03"></span>电瓶</a>
+		<a href="<?=Url::toRoute('purchase/index',array('t'=>8))?>" class="btn-block"><span class="purindex pcolor03"></span>电瓶</a>
 	</div>
 	<div class="col-xs-3 tab_subset">
-		<a href="<{:U('Purchase/class_list',array('t'=>16))}>" class="btn-block"><span class="purindex pcolor04"></span>美容</a>
+		<a href="<?=Url::toRoute('purchase/class_list',array('t'=>16))?>" class="btn-block"><span class="purindex pcolor04"></span>美容</a>
 	</div>
 	<div class="col-xs-3 tab_subset">
-		<a href="<{:U('Purchase/class_list',array('t'=>9))}>" class="btn-block"><span class="purindex pcolor06"></span>养护</a>
+		<a href="<?=Url::toRoute('purchase/class_list',array('t'=>9))?>" class="btn-block"><span class="purindex pcolor06"></span>养护</a>
 	</div>
 	<div class="col-xs-3 tab_subset">
-		<a href="<{:U('Purchase/index',array('t'=>27))}>" class="btn-block"><span class="purindex pcolor07"></span>精品</a>
+		<a href="<?=Url::toRoute('purchase/index',array('t'=>27))?>" class="btn-block"><span class="purindex pcolor07"></span>精品</a>
 	</div>
 	<div class="col-xs-3 tab_subset">
-		<a href="<{:U('Purchase/class_list',array('t'=>0))}>" class="btn-block"><span class="purindex pcolor08"></span>全部分类</a>
+		<a href="<?=Url::toRoute('purchase/class_list',array('t'=>0))?>" class="btn-block"><span class="purindex pcolor08"></span>全部分类</a>
 	</div>
 	<!-- <div class="col-xs-3 tab_subset">
-		<a href="<{:U('Purchase/index',array('t'=>4))}>" class="btn-block"><span class="purindex pcolor04"></span>美容保养</a>
+		<a href="<?=Url::toRoute('purchase/index',array('t'=>4))?>" class="btn-block"><span class="purindex pcolor04"></span>美容保养</a>
 	</div> -->
 </div>
 
@@ -180,7 +185,7 @@ body{position: relative;}
 		//var keyword=$('#keyword').val(),attr_value=$('#attr_value').val(),sort=$('#sort').val(),class_id=$('#class_id').val();
 	    $("#load").show();
 	    stop=false;
-	    $.get("<{:U('Purchase/ajax_get_qualitygoods')}>",{"p":currentpage}
+	    $.get("<?=Url::toRoute('purchase/ajax_get_qualitygoods')?>",{"p":currentpage}
 	  	,function(html){
 	          if(html!=""){ 
 	            if(currentpage==0) {
@@ -204,12 +209,14 @@ body{position: relative;}
 
 </div>
 
-<div class="purchase_index"><a class="btn-block" href="<{:U('Purchase/home')}>"></a></div>
+<div class="purchase_index"><a class="btn-block" href="<?=Url::toRoute('purchase/home')?>"></a></div>
 
 </div>
 
 <!--底栏-->
-<include file="Inc:purchase_bottom"/>
+<?php 
+include(Yii::$app->BasePath."/views/layouts/purchase_bottom.php");
+;?>
 
 <script type="text/javascript">
 document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
@@ -217,7 +224,7 @@ document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
   WeixinJSBridge.call('hideOptionMenu');
 });
 </script>
-<script src="__PUBLIC__/js/iscroll.js"></script>
-<script src="__PUBLIC__/js/jquery.drawer.min.js"></script>
+<script src="<?php echo SITE_URL;?>/js/iscroll.js"></script>
+<script src="<?php echo SITE_URL;?>/js/jquery.drawer.min.js"></script>
 </body>
 </html>
