@@ -43,3 +43,35 @@ $array = $post->attributes;
 render(): 渲染一个 视图名 并使用一个 布局 返回到渲染结果。
 renderPartial(): 渲染一个 视图名 并且不使用布局。
 renderAjax(): 渲染一个 视图名 并且不使用布局， 并注入所有注册的JS/CSS脚本和文件，通常使用在响应AJAX网页请求的情况下。
+
+查询
+Test::findBySql($sql)->all();//支持绑定参数
+Test::find()->where(array)->all();
+
+删除
+Test::deleteAll('id>:id',array(':id'=>0));
+
+添加
+$test = new Test;
+$test->id = 3;
+$test->title = 'name';
+$test->validate();
+if($test->hasError()){
+	die;
+}
+$test->save();
+数据验证在模型中的rules方法
+
+修改
+$test = Test::find()->where(['id'=>4])->one();
+$test->title = '111';
+$test->save();
+
+关联查询
+$customer = Customer::find()->where(['name'=>'zhangshan'])->one();
+======================================================================
+可以写在models里
+$order = $customer->hasMany(Order::calssName(),['customer_id'=>'id'])->asArray()->all();
+$orders = $customer->orders;//自动调用Customer::getOrders方法，顺便加上调用all();
+关联查询结果会缓存,使用unset($customer->order)释放
+$customer->find()->with('orders')->all();//优化foreach多次sql执行

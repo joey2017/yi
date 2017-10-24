@@ -15,14 +15,10 @@ class PurchaseController extends Controller {
 	//采购主页
 	public function actionHome(){
 		$session = yii::$app->session;
-		// var_dump($session);exit;	
 		if(!$session['account_info']){				
 			$session->set('redirect_url',Url::toRoute('home'));
 			header("Location:".Url::toRoute("biz/login"));
 		}else{
-			// $this->assign('title','诚车堂-订货管理小助手！');
-			// $this->display();
-			// var_dump(22);exit;
 			return $this->render('home',['title'=>'诚车堂-订货管理小助手！']);
 		}
 		
@@ -67,20 +63,40 @@ class PurchaseController extends Controller {
 	}
 
 	//精品推荐列表
-	public function ajax_get_qualitygoods(){
+	public function actionAjaxGetQualitygoods(){
 		$page = intval($_REQUEST['p']);
 		$limit =($page*8).",8";
 
-		$qualitygoods=M()->query("select pg.id,pg.goods_name,pg.thumbnail,pg.price,pg.unit,pg.promotion_price,ps.name as supplier_name,pg.sales from fw_pms_goods as pg left join fw_pms_goods_attr as pga on pga.goods_id=pg.id left join fw_pms_supplier as ps on ps.id=pg.supplier_id where pg.is_sale=1 and pg.is_del=0 and pg.is_top=1 order by pg.supplier_id asc limit ".$limit);
-		
+//		$qualitygoods=M()->query("select pg.id,pg.goods_name,pg.thumbnail,pg.price,pg.unit,pg.promotion_price,ps.name as supplier_name,pg.sales from fw_pms_goods as pg left join fw_pms_goods_attr as pga on pga.goods_id=pg.id left join fw_pms_supplier as ps on ps.id=pg.supplier_id where pg.is_sale=1 and pg.is_del=0 and pg.is_top=1 order by pg.supplier_id asc limit ".$limit);
+        $connection = Yii::$app->db;
+        $sql = "select pg.id,pg.goods_name,pg.thumbnail,pg.price,pg.unit,pg.promotion_price,ps.name as supplier_name,pg.sales from fw_pms_goods as pg left join fw_pms_goods_attr as pga on pga.goods_id=pg.id left join fw_pms_supplier as ps on ps.id=pg.supplier_id where pg.is_sale=1 and pg.is_del=0 and pg.is_top=1 order by pg.supplier_id asc limit ".$limit;
+        $qualitygoods = $connection->createCommand($sql)->queryAll();
+//        var_dump($qualitygoods);die;
 		foreach ($qualitygoods as $k => $v) {
 			if($v['promotion_price']>0){
 				$qualitygoods[$k]['price']=$v['promotion_price'];
 			}
 		}
-	
-		$this->assign('qualitygoods',$qualitygoods);
-		echo $html=$this->fetch();
+		$html = '';
+		foreach($qualitygoods as $g){
+            $html .= '<div class="col-xs-6 tab_subset producttab">
+                    <div class="proinfo">
+                        <a href="'.Url::toRoute('purchase/detail',array('id'=>$g['id'])).'" class="btn-block">
+                            <img src="'.$g['thumbnail'].'!purchase">
+                            <p>'.$g['goods_name'].'</p>
+            <div class="d-main">
+                <span class="price">￥:'.price($g['price']).'</span>
+                <span>/'.$g['unit'].'</span>
+                <span class="pull-right">已售 '.$g['sales'].'</span>
+            </div>
+            </a>
+            </div>
+            </div>';
+        }
+//        return $html;
+//		$this->assign('qualitygoods',$qualitygoods);
+//		echo $html=$this->fetch();
+        return $this->renderPartial('ajax_get_qualitygoods',['qualitygoods'=>$qualitygoods]);
 	}
 
 	public function class_list(){

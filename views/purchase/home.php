@@ -182,7 +182,7 @@ body{position: relative;}
 		//var keyword=$('#keyword').val(),attr_value=$('#attr_value').val(),sort=$('#sort').val(),class_id=$('#class_id').val();
 	    $("#load").show();
 	    stop=false;
-	    $.get("<?=Url::toRoute('purchase/ajax_get_qualitygoods')?>",{"p":currentpage}
+	    $.get("<?=Url::toRoute('purchase/ajax-get-qualitygoods')?>",{"p":currentpage}
 	  	,function(html){
 	          if(html!=""){ 
 	            if(currentpage==0) {
