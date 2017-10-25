@@ -1,4 +1,4 @@
-refresh() »ò redirect() È¥±ÜÃâ±íµ¥ÖØ¸´Ìá½»
+refresh() æˆ– redirect() åŽ»é¿å…è¡¨å•é‡å¤æäº¤
 
 
 
@@ -6,7 +6,7 @@ refresh() »ò redirect() È¥±ÜÃâ±íµ¥ÖØ¸´Ìá½»
 
 
 
-Yii::$app ´ú±íÓ¦ÓÃÊµÀý£¬ ÄÜÌá¹© request£¬response£¬db µÈµÈÌØ¶¨¹¦ÄÜµÄ×é¼þ
+Yii::$app ä»£è¡¨åº”ç”¨å®žä¾‹ï¼Œ èƒ½æä¾› requestï¼Œresponseï¼Œdb ç­‰ç­‰ç‰¹å®šåŠŸèƒ½çš„ç»„ä»¶
 
 
 
@@ -14,7 +14,7 @@ Yii::$app ´ú±íÓ¦ÓÃÊµÀý£¬ ÄÜÌá¹© request£¬response£¬db µÈµÈÌØ¶¨¹¦ÄÜµÄ×é¼þ
 
 
 
-Yii::$app->response->format=Response::FORMAT_JSON;//ÉèÖÃ·µ»ØÐÅÏ¢Í·json
+Yii::$app->response->format=Response::FORMAT_JSON;//è®¾ç½®è¿”å›žä¿¡æ¯å¤´json
 
 
 
@@ -26,7 +26,7 @@ return [];
 
 
 
-return \yii\helpers\Json::encode($test);//Ö±½Ó·µ»Øjson
+return \yii\helpers\Json::encode($test);//ç›´æŽ¥è¿”å›žjson
 
 
 
@@ -34,7 +34,7 @@ return \yii\helpers\Json::encode($test);//Ö±½Ó·µ»Øjson
 
 
 
-¿ØÖÆÆ÷´øactionHelloWorld£¬µ¥´Ê¼äÓÃ-¼ä¸ô
+æŽ§åˆ¶å™¨å¸¦actionHelloWorldï¼Œå•è¯é—´ç”¨-é—´éš”
 
 
 
@@ -42,7 +42,7 @@ return \yii\helpers\Json::encode($test);//Ö±½Ó·µ»Øjson
 
 
 
-ÓÃ»§ä¯ÀÀÆ÷Ìø×ªµ½ http://example.com
+ç”¨æˆ·æµè§ˆå™¨è·³è½¬åˆ° http://example.com
 
 
 
@@ -54,7 +54,7 @@ return $this->redirect('http://example.com');
 
 
 
-Ä¬ÈÏ²Ù×÷ÉèÖÃ
+é»˜è®¤æ“ä½œè®¾ç½®
 
 
 
@@ -64,7 +64,7 @@ public $defaultAction = 'home';
 
 ========================================================================
 
-¿é¸³Öµ  ÓÃ»§ÊäÈëµÄ±íµ¥Êý¾Ý¸³Öµµ½ ContactForm Ä£ÐÍµÄÊôÐÔ
+å—èµ‹å€¼  ç”¨æˆ·è¾“å…¥çš„è¡¨å•æ•°æ®èµ‹å€¼åˆ° ContactForm æ¨¡åž‹çš„å±žæ€§
 
 $model = new \app\models\ContactForm;
 
@@ -72,39 +72,39 @@ $model->attributes = \Yii::$app->request->post('ContactForm');
 
 ========================================================================
 
-½«Ä£ÐÍ×ª»»ÎªÊý×é×î¼òµ¥µÄ·½Ê½ÊÇÊ¹ÓÃ yii\base\Model::attributes() ÊôÐÔ
+å°†æ¨¡åž‹è½¬æ¢ä¸ºæ•°ç»„æœ€ç®€å•çš„æ–¹å¼æ˜¯ä½¿ç”¨ yii\base\Model::attributes() å±žæ€§
 
 $post = \app\models\Post::findOne(100);
 
 $array = $post->attributes;
 
-¸üÁé»îºÍÇ¿´óµÄ½«Ä£ÐÍ×ª»»ÎªÊý×éµÄ·½Ê½ÊÇÊ¹ÓÃ yii\base\Model::toArray() ·½·¨
+æ›´çµæ´»å’Œå¼ºå¤§çš„å°†æ¨¡åž‹è½¬æ¢ä¸ºæ•°ç»„çš„æ–¹å¼æ˜¯ä½¿ç”¨ yii\base\Model::toArray() æ–¹æ³•
 
 ========================================================================
 
-render(): äÖÈ¾Ò»¸ö ÊÓÍ¼Ãû ²¢Ê¹ÓÃÒ»¸ö ²¼¾Ö ·µ»Øµ½äÖÈ¾½á¹û¡£
+render(): æ¸²æŸ“ä¸€ä¸ª è§†å›¾å å¹¶ä½¿ç”¨ä¸€ä¸ª å¸ƒå±€ è¿”å›žåˆ°æ¸²æŸ“ç»“æžœã€‚
 
-renderPartial(): äÖÈ¾Ò»¸ö ÊÓÍ¼Ãû ²¢ÇÒ²»Ê¹ÓÃ²¼¾Ö¡£
+renderPartial(): æ¸²æŸ“ä¸€ä¸ª è§†å›¾å å¹¶ä¸”ä¸ä½¿ç”¨å¸ƒå±€ã€‚
 
-renderAjax(): äÖÈ¾Ò»¸ö ÊÓÍ¼Ãû ²¢ÇÒ²»Ê¹ÓÃ²¼¾Ö£¬ ²¢×¢ÈëËùÓÐ×¢²áµÄJS/CSS½Å±¾ºÍÎÄ¼þ£¬Í¨³£Ê¹ÓÃÔÚÏìÓ¦AJAXÍøÒ³ÇëÇóµÄÇé¿öÏÂ¡£
+renderAjax(): æ¸²æŸ“ä¸€ä¸ª è§†å›¾å å¹¶ä¸”ä¸ä½¿ç”¨å¸ƒå±€ï¼Œ å¹¶æ³¨å…¥æ‰€æœ‰æ³¨å†Œçš„JS/CSSè„šæœ¬å’Œæ–‡ä»¶ï¼Œé€šå¸¸ä½¿ç”¨åœ¨å“åº”AJAXç½‘é¡µè¯·æ±‚çš„æƒ…å†µä¸‹ã€‚
 
 
 
-²éÑ¯
+æŸ¥è¯¢
 
-Test::findBySql($sql)->all();//Ö§³Ö°ó¶¨²ÎÊý
+Test::findBySql($sql)->all();//æ”¯æŒç»‘å®šå‚æ•°
 
 Test::find()->where(array)->all();
 
 
 
-É¾³ý
+åˆ é™¤
 
 Test::deleteAll('id>:id',array(':id'=>0));
 
 
 
-Ìí¼Ó
+æ·»åŠ 
 
 $test = new Test;
 
@@ -122,11 +122,11 @@ if($test->hasError()){
 
 $test->save();
 
-Êý¾ÝÑéÖ¤ÔÚÄ£ÐÍÖÐµÄrules·½·¨
+æ•°æ®éªŒè¯åœ¨æ¨¡åž‹ä¸­çš„rulesæ–¹æ³•
 
 
 
-ÐÞ¸Ä
+ä¿®æ”¹
 
 $test = Test::find()->where(['id'=>4])->one();
 
@@ -136,21 +136,21 @@ $test->save();
 
 
 
-¹ØÁª²éÑ¯
+å…³è”æŸ¥è¯¢
 
 $customer = Customer::find()->where(['name'=>'zhangshan'])->one();
 
 ======================================================================
 
-¿ÉÒÔÐ´ÔÚmodelsÀï
+å¯ä»¥å†™åœ¨modelsé‡Œ
 
 $order = $customer->hasMany(Order::calssName(),['customer_id'=>'id'])->asArray()->all();
 
-$orders = $customer->orders;//×Ô¶¯µ÷ÓÃCustomer::getOrders·½·¨£¬Ë³±ã¼ÓÉÏµ÷ÓÃall();
+$orders = $customer->orders;//è‡ªåŠ¨è°ƒç”¨Customer::getOrdersæ–¹æ³•ï¼Œé¡ºä¾¿åŠ ä¸Šè°ƒç”¨all();
 
-¹ØÁª²éÑ¯½á¹û»á»º´æ,Ê¹ÓÃunset($customer->order)ÊÍ·Å
+å…³è”æŸ¥è¯¢ç»“æžœä¼šç¼“å­˜,ä½¿ç”¨unset($customer->order)é‡Šæ”¾
 
-$customer->find()->with('orders')->all();//ÓÅ»¯foreach¶à´ÎsqlÖ´ÐÐ
+$customer->find()->with('orders')->all();//ä¼˜åŒ–foreachå¤šæ¬¡sqlæ‰§è¡Œ
 
 
 =======================================================================
@@ -235,7 +235,7 @@ $query->filterWhere([
     'username' => $username,  
     'email' => $email,  
 ]);  
-//Èç¹ûemailÎª¿Õ,Ôò WHERE username=:username  
+//å¦‚æžœemailä¸ºç©º,åˆ™ WHERE username=:username  
 =======================================================================
 ORDER BY
 
@@ -280,13 +280,13 @@ $anotherQuery->select('id, type, name')->from('user')->limit(10);
 $query->union($anotherQuery);  
 =======================================================================
 QUERY METHODS
-all() //ËùÓÐÐÐÁÐ
-one() //µÚÒ»ÐÐ
-column() //µÚÒ»ÁÐ
-scalar() //µÚÒ»ÐÐµÚÒ»ÁÐ
-exists() //ÊÇ·ñÓÐ½á¹û´æÔÚ
-count() //¼ÇÂ¼ÊýÁ¿
-sum($q), average($q), max($q), min($q) //$q Îª×Ö¶Î»ò±í´ïÊ½
+all() //æ‰€æœ‰è¡Œåˆ—
+one() //ç¬¬ä¸€è¡Œ
+column() //ç¬¬ä¸€åˆ—
+scalar() //ç¬¬ä¸€è¡Œç¬¬ä¸€åˆ—
+exists() //æ˜¯å¦æœ‰ç»“æžœå­˜åœ¨
+count() //è®°å½•æ•°é‡
+sum($q), average($q), max($q), min($q) //$q ä¸ºå­—æ®µæˆ–è¡¨è¾¾å¼
 
 $count = (new \yii\db\Query())  
     ->from('user')  
@@ -311,6 +311,6 @@ print_r($command->params);
 // returns all rows of the query result  
 $rows = $command->queryAll();  
 =======================================================================
-´òÓ¡sqlÓï¾ä
-$query = User::find()->where(['id'=>[1,2,3,4]); // ÒªÈ¥µô×îºó->all()
+æ‰“å°sqlè¯­å¥
+$query = User::find()->where(['id'=>[1,2,3,4]); // è¦åŽ»æŽ‰æœ€åŽ->all()
 echo $query->createCommand()->getRawSql();
