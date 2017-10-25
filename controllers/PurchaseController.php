@@ -93,10 +93,10 @@ class PurchaseController extends Controller {
             </div>
             </div>';
         }
-//        return $html;
+       return $html;
 //		$this->assign('qualitygoods',$qualitygoods);
 //		echo $html=$this->fetch();
-        return $this->renderPartial('ajax_get_qualitygoods',['qualitygoods'=>$qualitygoods]);
+        // return $this->render('ajax-get-qualitygoods',['qualitygoods'=>$qualitygoods]);
 	}
 
 	public function class_list(){
@@ -212,31 +212,33 @@ class PurchaseController extends Controller {
 	}
 
 	//采购商品详情
-	public function detail()
+	public function actionDetail()
 	{
-		$id=intval($_GET['id']);
-		if(!session('account_info')){
-			session('redirect_url',U('Purchase/detail',array('id'=>$id)));
-			header("Location:".U("Biz/login"));
-
+		$id = intval($_GET['id']);
+		$session = Yii::$app->session;
+		if(!$session['account_info']){
+			$session->set('redirect_url',Url::toRoute('detail',array('id'=>$id)));
+			header("Location:".Url::toRoute("biz/login"));
 		}
 
-		
-
-		$where=" and pg.id=".$id;
+		// $where=" and pg.id=".$id;
 
 		//详情信息
-		$info=M('pms_goods as pg')->join('fw_pms_goods_attr as fpga on fpga.goods_id=pg.id')->join('fw_pms_supplier as fps on fps.id=pg.supplier_id')->field('pg.id,pg.goods_name,pg.unit,pg.sales,pg.thumbnail,pg.price,pg.stock,pg.promotion_price,pg.market_price,pg.detail,pg.imgs,pg.car_ids,fpga.attr_val,fpga.attr_name_val,fps.name as supplier_name,fps.qq')->where('pg.is_sale=1 and pg.is_del=0 '.$where)->find();
+		// $info = M('pms_goods as pg')->join('fw_pms_goods_attr as fpga on fpga.goods_id=pg.id')->join('fw_pms_supplier as fps on fps.id=pg.supplier_id')->field('pg.id,pg.goods_name,pg.unit,pg.sales,pg.thumbnail,pg.price,pg.stock,pg.promotion_price,pg.market_price,pg.detail,pg.imgs,pg.car_ids,fpga.attr_val,fpga.attr_name_val,fps.name as supplier_name,fps.qq')->where('pg.is_sale=1 and pg.is_del=0 '.$where)->find();
+		$commandQuery = new \yii\db\Query();
+		$info = $commandQuery->select(['pg.id','pg.goods_name','pg.unit','pg.sales','pg.thumbnail','pg.price','pg.stock','pg.promotion_price','pg.market_price','pg.detail','pg.imgs','pg.car_ids','fpga.attr_val','fpga.attr_name_val','fps.name as supplier_name','fps.qq'])
+		->from('fw_pms_goods as pg')
+		->leftJoin('fw_pms_goods_attr as fpga','fpga.goods_id=pg.id')
+		->leftJoin('fw_pms_supplier as fps','fps.id=pg.supplier_id')
+		->where(['pg.is_sale'=>1,'pg.is_del'=>0,'pg.id'=>$id])->one();
+		// echo $commandQuery->createCommand()->getRawSql(); 
+		var_dump($info);die;
 		if(!$info){
 			$this->error('商品不存在或已下架',U('Purchase/index'),3);
 		}
 
 		$info['imgs']=array_values(array_filter(explode(',',$info['imgs'])));
 
-
-		// if($info['promotion_price']>0){
-		// 	$info['price']=$info['promotion_price'];
-		// }
 		$info['detail']=str_replace('src="/ueditor/','src="http://www.17cct.com/ueditor/',$info['detail']);
 		$attr_val=explode(',',$info['attr_name_val']);	
 

@@ -2,6 +2,7 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 ?>
+55555
 <?php foreach ($qulitygoods as $g):?>
 	<div class="col-xs-6 tab_subset producttab">
 		<div class="proinfo">
