@@ -93,10 +93,10 @@ class PurchaseController extends Controller {
             </div>
             </div>';
         }
-//        return $html;
+        return $html;
 //		$this->assign('qualitygoods',$qualitygoods);
 //		echo $html=$this->fetch();
-        return $this->renderPartial('ajax_get_qualitygoods',['qualitygoods'=>$qualitygoods]);
+//        return $this->renderPartial('ajax_get_qualitygoods',['qualitygoods'=>$qualitygoods]);
 	}
 
 	public function class_list(){
