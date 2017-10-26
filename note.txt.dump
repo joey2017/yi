@@ -314,3 +314,20 @@ $rows = $command->queryAll();
 打印sql语句
 $query = User::find()->where(['id'=>[1,2,3,4]); // 要去掉最后->all()
 echo $query->createCommand()->getRawSql();
+
+=======================================================================
+//查询  
+  
+$db=\Yii::$app->db ->createCommand("select * from 表名") ->queryAll();  
+  
+//修改  
+  
+$db=\Yii::$app->db ->createCommand()->update('表名',['字段名'=>要修改的值],'条件') ->execute();  
+  
+// 删除  
+  
+$db=\Yii::$app->db ->createCommand() ->delete('表名','条件') ->execute();  
+  
+ //添加  
+  
+$db=\Yii::$app->db ->createCommand() ->insert('表名',['字段名'=>要添加的值],'条件') ->execute();  

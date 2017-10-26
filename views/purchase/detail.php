@@ -1,5 +1,10 @@
-<include file="Inc:header"/>
-<link rel="stylesheet" href="__PUBLIC__/font-awesome/css/font-awesome.min.css">
+<?php
+use yii\helpers\Html;
+use yii\widgets\ActiveForm;
+use yii\helpers\Url;
+include(Yii::$app->BasePath."/views/layouts/header.php");
+?>
+<link rel="stylesheet" href="<?=SITE_URL?>/font-awesome/css/font-awesome.min.css">
 </head>
 
 
@@ -71,38 +76,35 @@ body{position: relative;}
 .shoppingCart{left: 10px;}
 .purchase_index{left: 54px; }
 .shoppingCart a, .purchase_index a{   width: 36px; height: 36px;}
-.shoppingCart a{background: url(__PUBLIC__/images/shoppingCart.svg) no-repeat center;background-size: 20px;}
-.purchase_index a{background: url(__PUBLIC__/images/purchase_index.svg) no-repeat center;background-size: 30px;}
+.shoppingCart a{background: url(<?=SITE_URL?>/images/shoppingCart.svg) no-repeat center;background-size: 20px;}
+.purchase_index a{background: url(<?=SITE_URL?>/images/purchase_index.svg) no-repeat center;background-size: 30px;}
 </style>
 
 <div class="alertBg" id="msgBox" style="display:none;">
     <h4 class="alerttitle" id="alerttitle"></h4>
     <span class="vm f20" id='alertdetail'></span>
 </div>
-<!-- <div class="scroller">
-	<img src="https://img.alicdn.com/bao/uploaded/i4/TB1c6cDNpXXXXbOaXXXXXXXXXXX_!!0-item_pic.jpg_640x640q50.jpg">
-</div> -->
 
 <!--焦点图-->
 <div class="swiper-container">
     <div class="swiper-wrapper">
     	<div class="swiper-slide">
-	        <img src="<{$info.thumbnail}>" >
+	        <img src="<?=$info['thumbnail']?>" >
 	      </div>
-    <if condition="info.imgs neq null">
-		<volist name="info['imgs']" id="img">
+    <?php if($info['imgs']!=null):?>
+		<?php foreach($info['imgs'] as $img):?>
 		      <div class="swiper-slide">
-		        <img src="<{$img}>!purchase" >
+		        <img src="<?=$img?>!purchase" >
 		      </div>
-		</volist>
-	</if>	
+		<?php endforeach;?>
+	<?php endif;?>	
    
     </div>
      <div class="swiper-pagination"></div>
 </div>
 
-<link rel="stylesheet" href="__PUBLIC__/css/swiper.min.css">
-<script type="text/javascript" src="__PUBLIC__/js/swiper.min.js"></script>
+<link rel="stylesheet" href="<?=SITE_URL?>/css/swiper.min.css">
+<script type="text/javascript" src="<?=SITE_URL?>/js/swiper.min.js"></script>
 
 <script>
     var swiper = new Swiper('.swiper-container', {
@@ -119,15 +121,15 @@ body{position: relative;}
 
 <div class="col-xs-12">
 	<div class="xqtitle">
-		<h1><{$info.goods_name}></h1>
+		<h1><?=$info['goods_name']?></h1>
 	</div>
 	<div class="price_quantity box_flex">
 		<div class="flex1">
-			<p><if condition="$info['promotion_price'] neq 0">促销价<else/>批发价</if><span class="price">￥<if condition="$info['promotion_price'] neq 0"><{$info.promotion_price|price}><else/><{$info.price|price}></if></span> <if condition="$info.unit neq 0">/<{$info.unit}></if></p>
-			<if condition="$info['promotion_price'] neq 0">
-				<p style="font-size: 12px;">批发价<del><span class="">￥<{$info.price|price}> <if condition="$info.unit neq 0">/<{$info.unit}></if></span></del></p>
-			</if>
-			<p style="font-size: 12px;">零售价<span class="">￥<{$info.market_price|price}> <if condition="$info.unit neq 0">/<{$info.unit}></if></span></p>
+			<p><?php if($info['promotion_price']!=0):?>促销价<?php else:?>批发价<?php endif;?><span class="price">￥<?php if($info['promotion_price']!=0):?><?=price($info['promotion_price'])?><?php else:?><?=price($info['price'])?><?php endif;?></span> <?php if($info['unit'] != 0):?>/<?=$info['unit']?><?php endif;?></p>
+			<?php if($info['promotion_price']!=0):?>
+				<p style="font-size: 12px;">批发价<del><span class="">￥<?=price($info['price'])?> <?php if($info['unit']!= 0):?>/<?=$info['unit']?><?php endif;?></span></del></p>
+			<?php endif;?>
+			<p style="font-size: 12px;">零售价<span class="">￥<?=price($info['market_price'])?> <?php if($info['unit']!=0):?>/<?=$info['unit']?><?php endif;?></span></p>
 		</div>
 		<div class="pull-right">
 			<div class="setbox">
@@ -136,7 +138,7 @@ body{position: relative;}
 				<input class="add" name="" type="button" value="+" />
 			</div>
 			<div class="j_indPanel">
-				<span class="pull-right sold">已售 <{$info.sales}></span>
+				<span class="pull-right sold">已售 <?=$info['sales']?></span>
 			</div>
 		</div>
 		<script type="text/javascript">
@@ -160,10 +162,7 @@ body{position: relative;}
 			})
 		</script>	
 	</div>
-	<div><span class="pull-right price" style="margin-bottom:10px;font-size: 12px; margin-top: -5px;"><{$info.supplier_name}></span></div>
-	
-	
-
+	<div><span class="pull-right price" style="margin-bottom:10px;font-size: 12px; margin-top: -5px;"><?=$info['supplier_name']?></span></div>
 	
 </div>
 
@@ -176,68 +175,60 @@ body{position: relative;}
 </div>
 <div class="tab-content">
 	<div class="tab-pane" id="details">
-	<{$info.detail}>
+	<?=$info['detail']?>
 	</div>
 	<div class="tab-pane" id="parameter">
 		<table class="table table-bordered">
-			<!-- <tr>
-				<td colspan="2" class="tdbg" align="center">基本参数</td>
-			</tr> -->
-			<volist name="attr_names"  id="an">
+			<?php foreach($attr_names as $key => $an):?>
 				<tr>
-					<td align="right" width="120" class="tdbg"><{$an}></td>
-					<td><{$attr_vals[$key]}></td>
+					<td align="right" width="120" class="tdbg"><?=$an?></td>
+					<td><?=$attr_vals[$key]?></td>
 				</tr>
-			</volist>
-		
+			<?php endforeach;?>
 		</table>
 	</div>
 	<div class="tab-pane" id="deal">
 		<table class="table table-bordered">
-			<!-- <tr>
-				<td colspan="2" class="tdbg" align="center">适用车型</td>
-			</tr> -->
-			<volist name="car" id="c">
+			<?php foreach($car as $c):?>
 				<tr>
-					<td align="right" width="120" class="tdbg"><{$c.cate2}></td>
-					<td><{$c.cate3}></td>
+					<td align="right" width="120" class="tdbg"><?=$c['cate2']?></td>
+					<td><?=$c['cate3']?></td>
 				</tr>
-			</volist>
-		
-			
+			<?php endforeach;?>
 		</table>
 	</div>
 </div>
 
 <div class="sift_bottom box_flex">
-	<if condition="$info['qq']">
+	<?php if($info['qq']):?>
 		<div class="customer_qq">
-			<a href="http://wpa.qq.com/msgrd?v=3&uin=<{$info.qq}>&site=qq&menu=yes" class="btn-block"><i class="fa fa-commenting-o" aria-hidden="true"></i>
+			<a href="http://wpa.qq.com/msgrd?v=3&uin=<?=$info['qq']?>&site=qq&menu=yes" class="btn-block"><i class="fa fa-commenting-o" aria-hidden="true"></i>
 			客服</a>
 		</div>
-	</if>
+	<?php endif;?>
 	<div class="sift-btn flex1">
-		<button class="btn-block" id="add_card" onclick="add_cart(1)">加入购物车(<span id="cart_num"><{$cart_num}></span>)</button>
+		<button class="btn-block" id="add_card" onclick="add_cart(1)">加入购物车(<span id="cart_num"><?=$cart_num?></span>)</button>
 	</div>
 	<div class="sift-btn flex1 sift-btn-ok">
-		<!--<if condition='$info.stock eq 0'><button class="btn-block" disabled="true">缺货</button><else/><button onclick="add_cart(2)" class="btn-block">立即购买</button></if>-->
 		<button onclick="add_cart(2)" class="btn-block">立即购买</button>
 	</div>
 </div>
 
 <!--底栏-->
-<include file="Inc:purchase_bottom"/>
+<?php
+include(Yii::$app->BasePath."/views/layouts/purchase_bottom.php");
+?>
 
 <script type="text/javascript">
 		function add_cart(t){
-			var goods_num=parseInt($('#goods_num').val()),stock=parseInt(<{$info.stock}>),goods_id=parseInt(<{$info.id}>);	
+			var goods_num=parseInt($('#goods_num').val()),stock=parseInt(<?=$info['stock']?>),goods_id=parseInt(<?=$info['id']?>);	
 			if(goods_num<=0){
 				MsgBox('请输入正常购买数量');
 				return false;
 			}
 
 			$.ajax({
-		        url:"<{:U('Purchase/add_card')}>",
+		        url:"<?=Url::toRoute('add-card')?>",
 		        type:"POST",
 		        data:{
 		          "goods_num":goods_num,
@@ -256,7 +247,7 @@ body{position: relative;}
 			            		MsgBox('添加成功');
 					            $("#cart_num").html(data.stock);
 			            	}else{
-			            		location.href="<{:U('Purchase/cart')}>";
+			            		location.href="<?=Url::toRoute('cart')?>";
 			            	}         			
 					          	
 			            }else{

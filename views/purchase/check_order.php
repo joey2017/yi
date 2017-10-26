@@ -1,5 +1,9 @@
-<include file="Inc:header"/>
-
+<?php
+use yii\helpers\Html;
+use yii\widgets\ActiveForm;
+use yii\helpers\Url;
+include(Yii::$app->BasePath."/views/layouts/header.php");
+?>
 </head>
 
 
@@ -25,13 +29,13 @@ body{position: relative;}
 .add{background-position:-24px 3px;}
 .bline{border-bottom: 1px solid #e6e6e6;}
 .right_arrow{width: 13px;}
-.purchasesvg{background-image: url(__PUBLIC__/images/address_ico.svg); background-repeat: no-repeat;}
+.purchasesvg{background-image: url(<?=SITE_URL?>/images/address_ico.svg); background-repeat: no-repeat;}
 .right_arrow span{width: 15px; height: 24px;  margin-top: 25px; display: block; background-position:-22px -19px; background-size: 36px;}
 
 /*门店名*/
 .bundlev{height:40px; line-height: 40px; padding: 0 10px;}
 .bundlev p{margin: 0;}
-.storeico{display: inline-block; width: 20px; height: 20px; vertical-align: middle;background: url(__PUBLIC__/images/store.svg) no-repeat; background-size: 20px; margin-right: 3px;}
+.storeico{display: inline-block; width: 20px; height: 20px; vertical-align: middle;background: url(<?=SITE_URL?>/images/store.svg) no-repeat; background-size: 20px; margin-right: 3px;}
 
 /*产品列表*/
 .productlist{overflow: hidden; padding: 12px 10px;}
@@ -59,71 +63,59 @@ body{position: relative;}
 </div>
 <div class=" o_f bline infotab">
 
-	<a href="<if condition='$address eq null'><{:U('Purchase/address_add')}>?r=1<else/><{:U('Purchase/address_list')}></if>" class="box_flex">		
+	<a href="<?php if($address == null):?><?=Url::toRoute('purchase/address_add')?>?r=1<?php else:?><?=Url::toRoute('address-list')?><?php endif;?>" class="box_flex">		
 		<div class="flex1">
-			<if condition="$address neq ''">
-				<p class="addinfo"><span class="purchasesvg men"></span>姓名：<{$address.name}></p>
-				<p class="addinfo"><span class="purchasesvg tel"></span>电话：<{$address.tel}></p>
-				<p class="addinfo"><span class="purchasesvg add"></span>地址：<{$address.full_address}></p>				
-				<else/>
+			<?php if($address != ''):?>
+				<p class="addinfo"><span class="purchasesvg men"></span>姓名：<?=$address['name']?></p>
+				<p class="addinfo"><span class="purchasesvg tel"></span>电话：<?=$address['tel']?></p>
+				<p class="addinfo"><span class="purchasesvg add"></span>地址：<?=$address['full_address']?></p>				
+				<?php else:?>
 				<p style=" text-align: center; line-height: 30px; margin: 0;">+ 点击添加地址</p>
-			</if>
+			<?php endif;?>
 		</div>
-		<if condition="$address neq ''">
+		<?php if($address != ''):?>
 			<div class="right_arrow"><span class="purchasesvg"></span></div>
-		</if>		
+		<?php endif;?>		
 	</a>
 
 </div>
 
 
-<volist name="goods" id="g">
+<?php foreach($goods as $key => $g):?>
 
 	<div class="bundlev bline">
-		<span class="storeico"></span><{$g[0].name}>
+		<span class="storeico"></span><?=$g[0]['name']?>
 	</div>
-	<input type="hidden" name="supplier_id[]" value="<{$key}>">
-	<volist name="g" id="gi">
+	<input type="hidden" name="supplier_id[]" value="<?=$key?>">
+	<?php foreach($g as $gi):?>
 		<div class="productlist box_flex  bline">
 			<div class="leftimg">
-				<a href="<{:U('Purchase/detail',array('id'=>$gi['goods_id']))}>"><img src="<{$gi.thumbnail}>"></a>
+				<a href="<?=Url::toRoute('detail',array('id'=>$gi['goods_id']))?>"><img src="<?=$gi['thumbnail']?>"></a>
 			</div>
 			<div class="rightinfo flex1">
-				<h3><a href="<{:U('Purchase/detail',array('id'=>$gi['goods_id']))}>"><{$gi.goods_name}></a></h3>
+				<h3><a href="<?=Url::toRoute('detail',array('id'=>$gi['goods_id']))?>"><?=$gi['goods_name']?></a></h3>
 				<div class="d-main">
-					<span class="price">￥:<{$gi.price|price}></span> 
-					<span>/<{$gi.unit}></span>
-					<span class="pull-right">× <{$gi.number}></span>
+					<span class="price">￥:<?=price($gi['price'])?></span> 
+					<span>/<?=$gi['unit']?></span>
+					<span class="pull-right">× <?=$gi['number']?></span>
 				</div>
 			</div>
 		</div>
-	</volist>	
-	<!-- <div class="bundlev bline">
-		<p>
-			<span class="pull-left">配送方式：</span>	
-			<span class="pull-right">快递</span>
-		</p>
-	</div> -->
-	<!-- <div class="bundlev bline">
-		<p>
-			<span class="pull-left">商品金额：</span>
-			<span class="pull-right">￥:80.00</span>
-		</p>
-	</div> -->
+	<?php endforeach;?>	
 	<div class="bundlev bline">
 		<p>
 			<span class="pull-left">店铺活动：</span>
 			<span class="pull-right">
-			<select class="form-control activity"style=" border: 0; box-shadow: none; height:39px; padding:6px 10px;">
+			<select class="form-control activity" style="border: 0; box-shadow: none; height:39px; padding:6px 10px;">
 					
-					<if condition="$g[0]['activity'] neq ''">
+					<?php if($g[0]['activity'] != ''):?>
 						<option value="0">选择活动</option>
-						<volist name="g[0]['activity']" id ="act">
-					  		<option value='<{$act.id}>_<{$act.act_store_price}>_<{$act.discount_money}>_<{$act.act_type}>'><{$act.act_name}></option>
-					  	</volist>
-					  	<else/>
+						<?php foreach($g[0]['activity'] as $act):?>
+					  		<option value='<?=$act['id']?>_<?=$act['act_store_price']?>_<?=$act['discount_money']?>_<?=$act['act_type']?>'><?=$act['act_name']?></option>
+					  	<?php endforeach;?>
+					  	<?php else:?>
 					  	<option value="0">暂无活动</option>
-				  	</if>
+				  	<?php endif;?>
 				</select>
 			</span>
 		</p>
@@ -132,16 +124,16 @@ body{position: relative;}
 		<p class="box_flex">
 			<span class="flex1">优惠券：</span>
 			<span class="flex1">
-				<select class="form-control coupon"style=" border: 0; box-shadow: none; height:39px; padding:6px 10px;">
+				<select class="form-control coupon" style=" border: 0; box-shadow: none; height:39px; padding:6px 10px;">
 					
-				    <if condition="$g[0]['coupon'] neq ''">	
+				    <?php if($g[0]['coupon'] != ''):?>	
 				    	<option value="0">使用优惠券</option>			  
-						<volist name="g[0]['coupon']" id ="coupon">
-					  		<option value='<{$coupon.id}>_<{$coupon.discount_money}>'><{$coupon.coupon_name}></option>
-					  	</volist>
-					  	<else/>
+						<?php foreach($g[0]['coupon'] as $coupon):?>
+					  		<option value='<?=$coupon['id']?>_<?=$coupon['discount_money']?>'><?=$coupon['coupon_name']?></option>
+					  	<?php endforeach;?>
+					  	<?php else:?>
 					  	<option value="0">暂无优惠券</option>
-				  	</if>
+				  	<?php endif;?>
 				</select>
 			</span>
 		</p>
@@ -150,7 +142,7 @@ body{position: relative;}
 	<div class="bundlev bline">
 		<p>
 			<span class="pull-left">总计：</span>
-			<span class="pull-right price">￥:<{$gi.total_price|price}></span>
+			<span class="pull-right price">￥:<?=price($gi['total_price'])?></span>
 		</p>
 	</div>
 	<div class="bundlev o_f">
@@ -160,19 +152,19 @@ body{position: relative;}
 	</div>
 	<div class="inline"></div>
 
-</volist>
+<?php endforeach;?>
 
 <input type="hidden" id="act_rule_id">
 <input type="hidden" id="coupon_ids">
-<input type="hidden" id="address_id" value="<{$address.id}>">
+<input type="hidden" id="address_id" value="<?=$address['id']?>">
 
 <div style="height:48px;"></div>
 <div class="sift_bottom box_flex">
 	<div class="flex1">
-		<span class="pull-left">合计: <span class="price">￥<span id="total_price"><{$total.price|price}></span></span></span>
+		<span class="pull-left">合计: <span class="price">￥<span id="total_price"><?=price($total['price'])?></span></span></span>
 	</div>
 	<div class="sift_btn sift_btn_ok">
-		<button class="btn-block" id="submit" >提交订单（<{$total.count}>）</button>
+		<button class="btn-block" id="submit" >提交订单（<?=$total['count']?>）</button>
 	</div>
 </div>
 
@@ -200,16 +192,15 @@ body{position: relative;}
             	return false;
             }
 
-            //$('#submit').attr('disabled',true);
             $.ajax({
-                    url:"<{:U('Purchase/create_order')}>",
+                    url:"<?=Url::toRoute('purchase/create-order')?>",
                     type:"post",
                     data:args,
                     dataType:"json",
                     success:function(data){  
                         MsgBox(data.info);
                         if(data.status == 1){                           
-                            window.location.href="<{:U('Purchase/order')}>?id="+data.order_id+"&t=pms_merge_order";
+                            window.location.href="<?=Url::toRoute('purchase/order')?>&id="+data.order_id+"&t=pms_merge_order";
                         }
                     }
             });
@@ -223,7 +214,7 @@ body{position: relative;}
 
 		function get_discount(){
 
-			var total_price = Number(<{$total.price}>),discount_price = 0,act_rule_id = [],coupon_ids = [];
+			var total_price = Number(<?=$total['price']?>),discount_price = 0,act_rule_id = [],coupon_ids = [];
 
 			$('.activity').each(function(){
 
@@ -250,7 +241,6 @@ body{position: relative;}
 				}
 			});
 
-			//$('#discount_price').html(discount_price.toFixed(2));
 			$('#total_price').html((total_price-discount_price).toFixed(2));
 			$('#act_rule_id').val(act_rule_id);
 			$('#coupon_ids').val(coupon_ids);

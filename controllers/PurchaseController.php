@@ -12,6 +12,8 @@ use app\models\SupplierAccount;
 class PurchaseController extends Controller {
 	//取消默认布局
 	public $layout = false;
+	//禁用表单csrf
+    public $enableCsrfValidation = false;
 	//采购主页
 	public function actionHome(){
 		$session = yii::$app->session;
@@ -71,7 +73,7 @@ class PurchaseController extends Controller {
         $connection = Yii::$app->db;
         $sql = "select pg.id,pg.goods_name,pg.thumbnail,pg.price,pg.unit,pg.promotion_price,ps.name as supplier_name,pg.sales from fw_pms_goods as pg left join fw_pms_goods_attr as pga on pga.goods_id=pg.id left join fw_pms_supplier as ps on ps.id=pg.supplier_id where pg.is_sale=1 and pg.is_del=0 and pg.is_top=1 order by pg.supplier_id asc limit ".$limit;
         $qualitygoods = $connection->createCommand($sql)->queryAll();
-//        var_dump($qualitygoods);die;
+       // var_dump($qualitygoods);die;
 		foreach ($qualitygoods as $k => $v) {
 			if($v['promotion_price']>0){
 				$qualitygoods[$k]['price']=$v['promotion_price'];
@@ -81,7 +83,7 @@ class PurchaseController extends Controller {
 		foreach($qualitygoods as $g){
             $html .= '<div class="col-xs-6 tab_subset producttab">
                     <div class="proinfo">
-                        <a href="'.Url::toRoute('purchase/detail',array('id'=>$g['id'])).'" class="btn-block">
+                        <a href="'.Url::toRoute(['purchase/detail','id'=>$g['id']]).'" class="btn-block">
                             <img src="'.$g['thumbnail'].'!purchase">
                             <p>'.$g['goods_name'].'</p>
             <div class="d-main">
@@ -94,10 +96,7 @@ class PurchaseController extends Controller {
             </div>';
         }
         return $html;
-//		$this->assign('qualitygoods',$qualitygoods);
-//		echo $html=$this->fetch();
-//        return $this->renderPartial('ajax_get_qualitygoods',['qualitygoods'=>$qualitygoods]);
-
+    }
 	public function class_list(){
 		$t=intval($_REQUEST['t']);
 		$list=M('pms_class')->where('is_del=0')->order('sort asc')->select();
@@ -220,29 +219,25 @@ class PurchaseController extends Controller {
 			header("Location:".Url::toRoute("biz/login"));
 		}
 
-		// $where=" and pg.id=".$id;
-
 		//详情信息
-		// $info = M('pms_goods as pg')->join('fw_pms_goods_attr as fpga on fpga.goods_id=pg.id')->join('fw_pms_supplier as fps on fps.id=pg.supplier_id')->field('pg.id,pg.goods_name,pg.unit,pg.sales,pg.thumbnail,pg.price,pg.stock,pg.promotion_price,pg.market_price,pg.detail,pg.imgs,pg.car_ids,fpga.attr_val,fpga.attr_name_val,fps.name as supplier_name,fps.qq')->where('pg.is_sale=1 and pg.is_del=0 '.$where)->find();
 		$commandQuery = new \yii\db\Query();
-		$info = $commandQuery->select(['pg.id','pg.goods_name','pg.unit','pg.sales','pg.thumbnail','pg.price','pg.stock','pg.promotion_price','pg.market_price','pg.detail','pg.imgs','pg.car_ids','fpga.attr_val','fpga.attr_name_val','fps.name as supplier_name','fps.qq'])
+		$info = $commandQuery->select(['pg.id','pg.goods_name','pg.unit','pg.sales','pg.thumbnail','pg.price','pg.stock','pg.promotion_price','pg.market_price','pg.detail','pg.imgs','pg.car_ids','fpga.attr_val','fpga.attr_name_val','fps.name as supplier_name','fps.qq','pg.class_id'])
 		->from('fw_pms_goods as pg')
 		->leftJoin('fw_pms_goods_attr as fpga','fpga.goods_id=pg.id')
 		->leftJoin('fw_pms_supplier as fps','fps.id=pg.supplier_id')
 		->where(['pg.is_sale'=>1,'pg.is_del'=>0,'pg.id'=>$id])->one();
 		// echo $commandQuery->createCommand()->getRawSql(); 
-		var_dump($info);die;
 		if(!$info){
-			$this->error('商品不存在或已下架',U('Purchase/index'),3);
+			$this->redirect(Url::toRoute('index'));
 		}
 
-		$info['imgs']=array_values(array_filter(explode(',',$info['imgs'])));
+		$info['imgs'] = array_values(array_filter(explode(',',$info['imgs'])));
 
-		$info['detail']=str_replace('src="/ueditor/','src="http://www.17cct.com/ueditor/',$info['detail']);
-		$attr_val=explode(',',$info['attr_name_val']);	
+		$info['detail'] = str_replace('src="/ueditor/','src="http://www.17cct.com/ueditor/',$info['detail']);
+		$attr_val = explode(',',$info['attr_name_val']);	
 
 		foreach ($attr_val as $k => $v) {
-			$value=explode('：',$v);
+			$value = explode('：',$v);
 			if($info['class_id']==2){
 				if($value[0]=='胎面宽度'){
 				$last_attr=$value[1].'/';
@@ -277,10 +272,13 @@ class PurchaseController extends Controller {
 			array_splice($attr_names, 1,0,array('1'=>'尺寸'));
 			array_splice($attr_vals, 1,0,array('1'=>$last_attr));
 		}
+        
+        $car = [];
 		
 		//适用车型
 		if($info['car_ids']){
-			$car_list = M('car')->field('id,name,parent_id,level')->where('level in(0,1,2) and id in('.$info['car_ids'].')')->select();
+            // $car_list = M('car')->field('id,name,parent_id,level')->where('level in(0,1,2) and id in('.$info['car_ids'].')')->select();
+			$car_list = (new \yii\db\Query())->from('fw_car')->select(['id','name','parent_id','level'])->where(['level'=> [0,1,2],'id'=>$info['car_ids']])->all();
 			if($car_list){
 				foreach ($car_list as $k => $v) {
 					if($v['level'] == 1){
@@ -295,291 +293,295 @@ class PurchaseController extends Controller {
 				}
 			}
 		}
-		$cart_info=$this->get_location_cart_info();
-		$this->assign('cart_num',intval($cart_info['number']));
-		$this->assign("attr_vals",$attr_vals);
-		$this->assign("attr_names",$attr_names);
-		$this->assign("car",$car);
-		$this->assign('info',$info);
-		$this->assign('title',$info['goods_name']);
-		$this->display();
+		$cart_info = $this->get_location_cart_info();
+		// $this->assign('cart_num',intval($cart_info['number']));
+		// $this->assign("attr_vals",$attr_vals);
+		// $this->assign("attr_names",$attr_names);
+		// $this->assign("car",$car);
+		// $this->assign('info',$info);
+		// $this->assign('title',$info['goods_name']);
+		// $this->display();
+        return $this->render('detail',['cart_num'=>intval($cart_info['number']),'attr_vals'=>$attr_vals,'attr_names'=>$attr_names,'car'=>$car,'info'=>$info,'title'=>$info['goods_name']]);
 	}
 
 	//加入购物车
-	public function add_card(){
-		$cart['goods_id']=intval($_POST['goods_id']);
-		$goods_info=M('pms_goods')->field('id,goods_name,price,supplier_id,promotion_price')->where('is_del=0 and id=0'.$cart['goods_id'])->find();
+	public function actionAddCard(){
+		$cart['goods_id'] = intval($_POST['goods_id']);
+		$goods_info = (new \yii\db\Query())
+		->from('fw_pms_goods')
+		->select(['id','goods_name','price','supplier_id','promotion_price'])
+		->where(['is_del'=>0,'id'=>$cart['goods_id']])
+		->one();
 	
 		if(!$goods_info){
-			$result['status']=0;
-			$result['info']='商品不存在或已下架';
-			$this->ajaxReturn($result);	
+			$result['status'] = 0;
+			$result['info']   = '商品不存在或已下架';
+			return json_encode($result);	
 		}
 
 		$cart['number']=intval($_POST['goods_num']);
 
-		if($cart['number']<=0){
-			$result['status']=0;
-			$result['info']='购买商品至少为1件';
-			$this->ajaxReturn($result);
+		if($cart['number'] <= 0){
+			$result['status'] = 0;
+			$result['info']   = '购买商品至少为1件';
+			return json_encode($result);	
 		}
 		
 		$location_id=$this->get_location_ids();
 		if(!$location_id){
-			$result['status']=-1;
-			$result['info']='请先登录后再加入购物车';
-			$result['url']=U('Biz/login');
-			$this->ajaxReturn($result);
+			$result['status'] = -1;
+			$result['info']   = '请先登录后再加入购物车';
+			$result['url']    = Url::toRoute('biz/login');
+			return json_encode($result);	
 		}
 
 		//判断商品是否已添加过在购物车
-		$goods_cart_info=M('pms_erp_cart')->field('id,number')->where('goods_id='.$cart['goods_id'].' and location_id='.$location_id)->find();
+		$goods_cart_info = (new \yii\db\Query())->from('fw_pms_erp_cart')
+		->select('id,number')
+		->where(['goods_id'=>$cart['goods_id'],'location_id'=>$location_id])
+		->one();
 
 		if($goods_cart_info){			
 
 			//判断商品库存
 			$stock_info=$this->goods_stock_info($cart['goods_id'],$cart['number']);
 
-			/*if($stock_info<0){
-				$result['status']=0;
-				$result['info']='商品库存不足';
-				$this->ajaxReturn($result);
-			}*/
-
-			$update_cart['number']=intval($goods_cart_info['number'])+intval($cart['number']);
-			$r=M('pms_erp_cart')->where('id='.$goods_cart_info['id'])->save($update_cart);			
+			$update_cart['number'] = intval($goods_cart_info['number'])+intval($cart['number']);
+			$r = Yii::$app->db->createCommand()
+			->update('fw_pms_erp_cart',$update_cart,['id'=>$goods_cart_info['id']])->execute();			
 		}else{
 
 			//判断商品库存
-			$stock_info=$this->goods_stock_info($cart['goods_id'],$cart['number']);
+			$stock_info = $this->goods_stock_info($cart['goods_id'],$cart['number']);
 
-			/*if($stock_info<0){
-				$result['status']=0;
-				$result['info']='商品库存不足';
-				$this->ajaxReturn($result);
-			}*/
-
-			$cart['goods_name']=$goods_info['goods_name'];
-			$cart['price']=$goods_info['promotion_price']>0?$goods_info['promotion_price']:$goods_info['price'];
-			$cart['supplier_id']=$goods_info['supplier_id'];
-			$cart['location_id']=$location_id;
-			$cart['create_time']=time();
-			$r=M('pms_erp_cart')->add($cart);
+			$cart['goods_name']  = $goods_info['goods_name'];
+			$cart['price']       = $goods_info['promotion_price']>0?$goods_info['promotion_price']:$goods_info['price'];
+			$cart['supplier_id'] = $goods_info['supplier_id'];
+			$cart['location_id'] = $location_id;
+			$cart['create_time'] = time();
+			$r = Yii::$app->db->createCommand()->insert('fw_pms_erp_cart',$cart)->execute();  
 		}		
 
 		if($r){
-			$cart_info=$this->get_location_cart_info();
-			$result['status']=1;
-			$result['stock']=$cart_info['number'];//购物车中的商品数量
-			$result['info']='加入购物车成功';			
+			$cart_info        = $this->get_location_cart_info();
+			$result['status'] = 1;
+			$result['stock']  = $cart_info['number'];//购物车中的商品数量
+			$result['info']   = '加入购物车成功';			
 		}else{
-			$result['status']=0;
-			$result['info']='加入购物车失败';
+			$result['status'] = 0;
+			$result['info']   = '加入购物车失败';
 		}
-		$this->ajaxReturn($result);
+		return json_encode($result);
 	}
 
 	//购物车管理
-	public function cart(){
+	public function actionCart(){
 
-		$location_id=$this->get_location_ids();
+		$location_id = $this->get_location_ids();
 
-		$info=M()->query("select pg.thumbnail,pg.stock,pec.*,ps.name,pga.attr_name_val from fw_pms_erp_cart as pec left join fw_pms_goods as pg on pg.id=pec.goods_id left join fw_pms_supplier as ps on ps.id=pg.supplier_id left join fw_pms_goods_attr as pga on pga.goods_id=pg.id  where  pec.location_id=".intval($location_id));
-		
-
+		// $info = Yii::$app->db->createCommand("select pg.thumbnail,pg.stock,pec.*,ps.name,pga.attr_name_val from fw_pms_erp_cart as pec left join fw_pms_goods as pg on pg.id=pec.goods_id left join fw_pms_supplier as ps on ps.id=pg.supplier_id left join fw_pms_goods_attr as pga on pga.goods_id=pg.id  where  pec.location_id=".intval($location_id)) ->queryAll();
+		$info = (new \yii\db\Query())->select(['pg.thumbnail','pg.stock','pec.*','ps.name','pga.attr_name_val'])
+		->from('fw_pms_erp_cart as pec')
+		->leftJoin('fw_pms_goods as pg','pg.id=pec.goods_id')
+		->leftJoin('fw_pms_supplier as ps','ps.id=pg.supplier_id')
+		->leftJoin('fw_pms_goods_attr as pga','pga.goods_id=pg.id')
+		->where(['pec.location_id'=>intval($location_id)])
+		->all();
+		$total = ['price'=>0,'count'=>0];
 		foreach ($info as $k => $v) {
-			$v['total_price']=$v['price']*$v['number'];
-			$total['price']+=$v['total_price'];
-			$total['count']+=$v['number'];
-			$v['attr_name']=explode(',',$v['attr_name_val']);
-			$v['change_stock']=intval($v['stock']);//操作库存
-			$v['stock']=$this->goods_stock_info($v['goods_id'],0);//显示库存			
-			$cart_info[$v['name']]['item'][]=$v;
-			$cart_info[$v['name']]['supplier_id']=$v['supplier_id'];
+			$v['total_price']                     = $v['price']*$v['number'];
+			$total['price']                       += $v['total_price'];
+			$total['count']                       += $v['number'];
+			$v['attr_name']                       = explode(',',$v['attr_name_val']);
+			$v['change_stock']                    = intval($v['stock']);//操作库存
+			$v['stock']                           = $this->goods_stock_info($v['goods_id'],0);//显示库存
+			$cart_info[$v['name']]['item'][]      = $v;
+			$cart_info[$v['name']]['supplier_id'] = $v['supplier_id'];
 		}
 
-		//商品活动输出
-		// $total['price']=round($total['price'],2);
-		// $total['count']=intval($total['count']);
-		$this->assign('total',$total);
-		$this->assign('cart_info',$cart_info);
-		$this->assign('title','诚车堂-订货管理小助手！');
-		$this->display();
+		return $this->render('cart',['total'=>$total,'cart_info'=>$cart_info,'title'=>'诚车堂-订货管理小助手！']);
 	}
 
 
 	//修改购物车
-	public function modify_cart(){
+	public function actionModifyCart(){
 		
-		$id=intval($_POST['id']);//修改记录id
-		$location_id=intval($this->get_location_ids());
-		$update_cart['number']=intval($_POST['number']);//修改后的数量
-		$type=$_POST['type'];
-		if($update_cart['number']<=0){
-			$result['status']=0;
-			$result['info']='购买商品至少为1件';
-			ajax_return($result);
+		$id                    = intval($_POST['id']);//修改记录id
+		$location_id           = intval($this->get_location_ids());
+		$update_cart['number'] = intval($_POST['number']);//修改后的数量
+		$type                  = $_POST['type'];
+		if($update_cart['number'] <= 0){
+			$result['status'] = 0;
+			$result['info']   = '购买商品至少为1件';
+			return json_encode($result);
 		}
 
-		$cart_info=M('pms_erp_cart')->where('id='.$id.' and location_id='.$location_id)->find();
+		// $cart_info=M('pms_erp_cart')->where('id='.$id.' and location_id='.$location_id)->find();
+		$cart_info = (new \yii\db\Query())->from('fw_pms_erp_cart')->where(['id'=>$id,'location_id'=>$location_id])->one();
 
 		if($cart_info){
 
-			/*if($type=='a'){
-				//判断商品库存
-				$stock_info=$this->goods_stock_info($cart_info['goods_id'],1);
-
-				if($stock_info<0){
-					$result['status']=0;
-					$result['info']='商品库存不足';
-					$this->ajaxReturn($result);					
-				}
-			}*/
-
-			$r=M('pms_erp_cart')->where('id='.$id)->save($update_cart);
+			// $r=M('pms_erp_cart')->where('id='.$id)->save($update_cart);
+			$r = Yii::$app->db->createCommand()->update('fw_pms_erp_cart',$update_cart,['id'=>$id])->execute();
 
 			if($r){
-				$location_cart_info=$this->get_location_cart_info();
-				$result['number']=$location_cart_info['number'];
-				$result['total_price']=round($location_cart_info['total_price'],2);
-				$result['status']=1;
-				$result['info']='修改成功';			
+				$location_cart_info    = $this->get_location_cart_info();
+				$result['number']      = $location_cart_info['number'];
+				$result['total_price'] = round($location_cart_info['total_price'],2);
+				$result['status']      = 1;
+				$result['info']        = '修改成功';			
 			}else{
-				$result['status']=0;
-				$result['info']='修改失败';				
+				$result['status'] = 0;
+				$result['info']   = '修改失败';				
 			}
-			$this->ajaxReturn($result);				
+			return json_encode($result);				
 
 		}else{
-			$result['status']=0;
-			$result['info']='修改失败';
-			$this->ajaxReturn($result);	
+			$result['status'] = 0;
+			$result['info']   = '修改失败';
+			return json_encode($result);				
 		}
 	}
 
 	//删除购物车
-	public function delete_cart(){
-		$id=intval($_POST['id']);
+	public function actionDeleteCart(){
+
+		$id = intval($_POST['id']);
 
 		if(!$id){
-			$result['status']=0;
-			$result['info']='请选择要删除的商品';	
-			$this->ajaxReturn($result);	
+			$result['status'] = 0;
+			$result['info']   = '请选择要删除的商品';	
+			return json_encode($result);				
 		}
 
-		$location_id=intval($this->get_location_ids());
+		$location_id = intval($this->get_location_ids());
 
-		$r=M('pms_erp_cart')->where("id=".$id." and location_id=".$location_id)->delete();
+		$r = Yii::$app->db->createCommand()->delete('fw_pms_erp_cart',['id'=>$id,'location_id'=>$location_id])->execute();
 	
 		if($r){
-			$cart_info=$this->get_location_cart_info();
-			$result['number']=intval($cart_info['number']);
-			$result['total_price']=round($cart_info['total_price'],2);
-			$result['status']=1;
-			$result['info']=$info.'成功';		
+			$cart_info             = $this->get_location_cart_info();
+			$result['number']      = intval($cart_info['number']);
+			$result['total_price'] = round($cart_info['total_price'],2);
+			$result['status']      = 1;
+			$result['info']        = '删除成功';		
 		}else{
-			$result['status']=0;
-			$result['info']=$info.'失败';		
+			$result['status'] = 0;
+			$result['info']   = '删除失败';		
 		}
 
-	   $this->ajaxReturn($result);		  
+	   return json_encode($result);				
+
 	}
 
 	//检查订单
-	public function check_order(){
-
-		if(!session('account_info')){
-			session('redirect_url',U('Purchase/check_order'));
-			header("Location:".U("Biz/login"));
+	public function actionCheckOrder(){
+		$session = Yii::$app->session;
+		if(!$session['account_info']){
+			$session->set('redirect_url',Url::toRoute('check-order'));
+			header("Location:".Url::toRoute("biz/login"));
 		}
 
-		$ids=substr($_GET['ids'],0,-1);
+		$ids = substr($_GET['ids'],0,-1);
 
 		$location_id = $this->get_location_ids();
 
-
-		$cart_info = M('pms_erp_cart')->where('location_id='.$location_id." and id in(".$ids.")")->getField('id');		
-		
-		
+		// $cart_info = M('pms_erp_cart')->where('location_id='.$location_id." and id in(".$ids.")")->getField('id');		
+		$cart_info = (new \yii\db\Query())->from('fw_pms_erp_cart')
+		->where(['location_id'=>$location_id,'id'=>$ids])
+		->select(['id'])
+		->all();		
 		if(!$cart_info){
-			$this->error('购物车还没有商品',U('Purchase/index'),3);
+			$this->redirect(Url::toRoute('index'));
 		}
 
-		session('cart_ids',$_GET['ids']);
+		$session->set('cart_ids',$_GET['ids']);
 
 		//地址
-		$address = M('pms_address')->where('is_default=1 and location_id='.$location_id)->find();		
+		// $address = M('pms_address')->where('is_default=1 and location_id='.$location_id)->find();		
+		$address = (new \yii\db\Query())->from('fw_pms_address')
+		->where(['is_default'=>1,'location_id'=>$location_id])
+		->one();		
 			
 		//购物车商品信息
-		$goods_info =M()->query("select pg.thumbnail,pg.price as goods_price,pg.promotion_price,pg.stock,pg.unit,pec.*,ps.name,pga.attr_name_val from fw_pms_erp_cart as pec left join fw_pms_goods as pg on pg.id=pec.goods_id left join fw_pms_supplier as ps on ps.id=pg.supplier_id left join fw_pms_goods_attr as pga on pga.goods_id=pg.id  where  pec.location_id=".intval($location_id)." and pec.id in(".$ids.")");
-		
+		$goods_info = Yii::$app->db->createCommand("select pg.thumbnail,pg.price as goods_price,pg.promotion_price,pg.stock,pg.unit,pec.*,ps.name,pga.attr_name_val from fw_pms_erp_cart as pec left join fw_pms_goods as pg on pg.id=pec.goods_id left join fw_pms_supplier as ps on ps.id=pg.supplier_id left join fw_pms_goods_attr as pga on pga.goods_id=pg.id  where  pec.location_id=".intval($location_id)." and pec.id in(".$ids.")")->queryAll();
+		$total = ['price'=>0,'count'=>0];
 		foreach ($goods_info as $k => $v) {
 			//使用最新价格，如果有促销价则使用促销价
-            $v['price'] = $v['promotion_price']>0 ? $v['promotion_price'] : $v['goods_price'];
-            $p[$v['supplier_id']]['total_price'] += $v['price']*$v['number'];
-            $v['total_price'] = $p[$v['supplier_id']]['total_price'];
-            $v['attr_name'] = explode(',',$v['attr_name_val']);
-            $goods[$v['supplier_id']][] = $v;
-            $total['price'] += $v['price']*$v['number'];
-            $total['count'] += $v['number'];
-            $datas[$v['supplier_id']]['goods_id'][] = $v['goods_id'];
-            $datas[$v['supplier_id']]['price'][] += $v['total_price'];
+			$v['price']                             = $v['promotion_price']>0 ? $v['promotion_price'] : $v['goods_price'];
+			if(isset($p[$v['supplier_id']]['total_price']))
+				$p[$v['supplier_id']]['total_price']    += $v['price']*$v['number'];
+			else
+				$p[$v['supplier_id']]['total_price']    = $v['price']*$v['number'];
+			$v['total_price']                       = $p[$v['supplier_id']]['total_price'];
+			$v['attr_name']                         = explode(',',$v['attr_name_val']);
+			$goods[$v['supplier_id']][]             = $v;
+			$total['price']                         += $v['price']*$v['number'];
+			$total['count']                         += $v['number'];
+			$datas[$v['supplier_id']]['goods_id'][] = $v['goods_id'];
+			if(isset($datas[$v['supplier_id']]['price']))
+				$datas[$v['supplier_id']]['price'][]    += $v['total_price'];
+			else
+				$datas[$v['supplier_id']]['price'][]    = $v['total_price'];
         }
 		
 		foreach ($datas as $k => $v) {
 			//供应商活动列表
 			$goods[$k][0]['activity'] = $this->get_activity($v['goods_id'],$v['price'],$k);
 			//能使用的优惠券列表
-			$goods[$k][0]['coupon'] = $this->get_coupon($v['goods_id'],$v['price'],$k);
+			$goods[$k][0]['coupon']   = $this->get_coupon($v['goods_id'],$v['price'],$k);
 		}
 		
-		$this->assign('title','诚车堂-订货管理小助手！');
-		$this->assign('address',$address);
-		$this->assign('province_list',$province_list);
-		$this->assign('goods',$goods);
-		$this->assign('total',$total);
-		$this->display();	
+		// $this->assign('title','诚车堂-订货管理小助手！');
+		// $this->assign('address',$address);
+		// $this->assign('province_list',$province_list);
+		// $this->assign('goods',$goods);
+		// $this->assign('total',$total);
+		// $this->display();	
 
-		
+		return $this->render('check_order',['title'=>'诚车堂-订货管理小助手！','address'=>$address,'goods'=>$goods,'total'=>$total]);
 	}
 
 
 	//创建订单
-	public function create_order(){
+	public function actionCreateOrder(){
 
-		$location_id=$this->get_location_ids();
+		$location_id = $this->get_location_ids();
 
-		$ids=substr(session('cart_ids'),0,-1);
+		$ids = substr(Yii::$app->session->get('cart_ids'),0,-1);
 
-		$cart_info=M()->query("select pg.thumbnail,pg.price as goods_price,pg.promotion_price,pg.stock,pec.*,ps.name,pga.attr_name_val from fw_pms_erp_cart as pec left join fw_pms_goods as pg on pg.id=pec.goods_id left join fw_pms_supplier as ps on ps.id=pg.supplier_id left join fw_pms_goods_attr as pga on pga.goods_id=pg.id  where  pec.location_id=".intval($location_id)." and pec.id in(".$ids.")"); 
+        // $cart_info=M()->query("select pg.thumbnail,pg.price as goods_price,pg.promotion_price,pg.stock,pec.*,ps.name,pga.attr_name_val from fw_pms_erp_cart as pec left join fw_pms_goods as pg on pg.id=pec.goods_id left join fw_pms_supplier as ps on ps.id=pg.supplier_id left join fw_pms_goods_attr as pga on pga.goods_id=pg.id  where  pec.location_id=".intval($location_id)." and pec.id in(".$ids.")"); 
+		$cart_info = Yii::$app->db->createCommand("select pg.thumbnail,pg.price as goods_price,pg.promotion_price,pg.stock,pec.*,ps.name,pga.attr_name_val,pg.costs from fw_pms_erp_cart as pec left join fw_pms_goods as pg on pg.id=pec.goods_id left join fw_pms_supplier as ps on ps.id=pg.supplier_id left join fw_pms_goods_attr as pga on pga.goods_id=pg.id  where  pec.location_id=".intval($location_id)." and pec.id in(".$ids.")")->queryAll(); 
 		
 		if(!$cart_info){
-			$result['status']=0;
-			$result['info']='购物车空空如也,先去采购吧';
-			$this->ajaxReturn($result);	
+            $result['status'] = 0;
+            $result['info']   = '购物车空空如也,先去采购吧';
+            return json_encode($result);
 		}		
 
-		$account_info = session('account_info');
-		//$location_info = $this->get_location_info();
+		$account_info = Yii::$app->session->get('account_info');
 
 		$address_id = intval($_POST['address_id']);
-		$address = M('pms_address')->where('id='.$address_id.' and location_id='.$location_id)->find();
-
+        // $address = M('pms_address')->where('id='.$address_id.' and location_id='.$location_id)->find();
+		$address = (new \yii\db\Query())
+        ->from('fw_pms_address')
+        ->where(['id'=>$address_id,'location_id'=>$location_id])
+        ->one();
+        $create_order_price = 0;
 		foreach ($cart_info as $k => $v) {
 			
 			//使用最新价格，如果有促销价则使用促销价
-			$v['price'] = $v['promotion_price']>0 ? $v['promotion_price'] : $v['goods_price'];
-			$v['total_price'] = $v['price']*$v['number'];//小计
-			$create_order_price +=$v['total_price'];
-			$order_info[$v['supplier_id']][] = $v;
-			$datas[$v['supplier_id']]['goods_id'][] = $v['goods_id'];
-			$datas[$v['supplier_id']]['price'][] = $v['total_price'];
+            $v['price']                             = $v['promotion_price']>0 ? $v['promotion_price'] : $v['goods_price'];
+            $v['total_price']                       = $v['price']*$v['number'];//小计
+            $create_order_price                     +=$v['total_price'];
+            $order_info[$v['supplier_id']][]        = $v;
+            $datas[$v['supplier_id']]['goods_id'][] = $v['goods_id'];
+            $datas[$v['supplier_id']]['price'][]    = $v['total_price'];
 		}
 
-		if($create_order_price<=0){
-			$result['status']=0;
-			$result['info']='订单总价不能为0';
-			$this->ajaxReturn($result);	
+		if($create_order_price <= 0){
+            $result['status'] = 0;
+            $result['info']   = '订单总价不能为0';
+            return json_encode($result);
 		}
 
 		// 活动优惠或折扣id
@@ -591,37 +593,43 @@ class PurchaseController extends Controller {
 		$act_data = $this->use_act_coupon($act_rule_id,$coupon_ids,$datas);
 		
 		//供应商id数组和留言数组
-		$supplier_id = $_POST['supplier_id'];
-		$remark = $_POST['remark'];
+        $supplier_id = $_POST['supplier_id'];
+        $remark      = $_POST['remark'];
 
 		foreach ($supplier_id as $k => $v) {
 			$new_remark[$v] = $remark[$k];
 		}
 
+        $all_total_price = 0;
+
+        $location_name = (new \yii\db\Query())->from('fw_supplier_location')
+        ->where(['id'=>$location_id])
+        ->select(['name'])
+        ->one();
 		//生成订单 多个店铺生成多个订单
 		foreach ($order_info as $k => $v) {
-			$order['order_sn'] = 'MD'.date('Ymdhis',time()).rand(10,99);
-			$order['purchase_user_id'] = $account_info['id'];
-			$order['location_id'] = $location_id;
-			$order['location_name'] = M('supplier_location')->where('id='.$location_id)->getField('name');
-			$order['receive_user'] = $address['name'];
-			$order['receive_tel'] = $address['tel'];
-			$order['create_time'] = time();
-			$order['supplier_id'] = $k;
-			$order['pay_status'] = 0;
-			$order['status'] = 1;
-			$order['total_original_price'] = $act_data[$k]['total_original_price'];
-			$order['total_price'] = $act_data[$k]['total_price'];
-			$order['act_id'] = $act_data[$k]['act_id'];
-			$order['location_coupon_id'] = $act_data[$k]['location_coupon_id'];
-			$order['discount_price'] = $act_data[$k]['discount_price'];
-			$order['is_del'] = 0;
-			$order['address'] = $address['full_address'];
-			$order['remark'] = $new_remark[$k];
+            $order['order_sn']             = 'MD'.date('Ymdhis',time()).rand(10,99);
+            $order['purchase_user_id']     = $account_info['id'];
+            $order['location_id']          = $location_id;
+            $order['location_name']        = $location_name['name'];
+            $order['receive_user']         = $address['name'];
+            $order['receive_tel']          = $address['tel'];
+            $order['create_time']          = time();
+            $order['supplier_id']          = $k;
+            $order['pay_status']           = 0;
+            $order['status']               = 1;
+            $order['total_original_price'] = $act_data[$k]['total_original_price'];
+            $order['total_price']          = $act_data[$k]['total_price'];
+            $order['act_id']               = $act_data[$k]['act_id'];
+            $order['location_coupon_id']   = $act_data[$k]['location_coupon_id'];
+            $order['discount_price']       = $act_data[$k]['discount_price'];
+            $order['is_del']               = 0;
+            $order['address']              = $address['full_address'];
+            $order['remark']               = $new_remark[$k];
 			
-			$order_id=M('pms_order')->add($order);
-			
-
+            // $order_id=M('pms_order')->add($order);
+			$order_id = Yii::$app->db->createCommand()->insert('fw_pms_order',$order)->execute();
+            $order_id = Yii::$app->db->getLastInsertId();
 			if($order_id){
 
 				//将单个或多个order_id写入合并订单
@@ -633,95 +641,101 @@ class PurchaseController extends Controller {
 
 				//写入订单详情			
 				foreach ($v as $i_k => $i_v) {
-					$order_costs += $i_v['costs'] * $i_v['number'];
-					$order_nums += $i_v['number'];
-					$item_data['order_id']=$order_id;
-					$item_data['goods_name']=$i_v['goods_name'];
-					$item_data['goods_id']=$i_v['goods_id'];
-					$item_data['sell_price']=$i_v['price'];
-					$item_data['num']=$i_v['number'];
-					$item_data['thumbnail']=$i_v['thumbnail'];
-					$item_data['attr_val']=$i_v['attr_name_val'];					
-    				$item_result = M('pms_order_item')->add($item_data);
+                    $order_costs             += $i_v['costs'] * $i_v['number'];
+                    $order_nums              += $i_v['number'];
+                    $item_data['order_id']   = $order_id;
+                    $item_data['goods_name'] = $i_v['goods_name'];
+                    $item_data['goods_id']   = $i_v['goods_id'];
+                    $item_data['sell_price'] = $i_v['price'];
+                    $item_data['num']        = $i_v['number'];
+                    $item_data['thumbnail']  = $i_v['thumbnail'];
+                    $item_data['attr_val']   = $i_v['attr_name_val'];					
+                    $item_result             = Yii::$app->db->createCommand()->insert('fw_pms_order_item',$item_data)->execute();
                 }
 				
-				$update_sql="UPDATE fw_pms_order SET `costs`=".$order_costs.",total_num=".$order_nums." WHERE `id`=".$order_id;
-				M()->query($update_sql);				
+				// $update_sql="UPDATE fw_pms_order SET `costs`=".$order_costs.",total_num=".$order_nums." WHERE `id`=".$order_id;
+				// M()->query($update_sql);
+                Yii::$app->db->createCommand()->update('fw_pms_order',['costs'=>$order_costs,'total_num'=>$order_nums],['id'=>$order_id])->execute();				
 
 				if(!$item_result){
 
-					$result['status']=0;
-					$result['info']='订单详情创建失败';
-					$this->ajaxReturn($result);	
+                    $result['status'] = 0;
+                    $result['info']   = '订单详情创建失败';
+                    return json_encode($result);	
 				}
 
 			}else{
-				$result['status']=0;
-				$result['info']='订单详情创建失败';
-				$this->ajaxReturn($result);	
+                $result['status'] = 0;
+                $result['info']   = '订单详情创建失败';
+                return json_encode($result);    
 			}
 			
 		}
 		//创建合并订单
 		if($all_order_id && $all_total_price){
 			
-			$merge_order['order_sn'] = 'JY'.date('Ymdhis',time()).rand(10,99);
-			$merge_order['order_ids'] = implode(',', $all_order_id);
-			$merge_order['receive_user'] = $address['name'];
-			$merge_order['receive_tel'] = $address['tel'];
-			$merge_order['location_id'] = $location_id;
-			$merge_order['create_time'] = time();
-			$merge_order['total_price'] = $all_total_price;
-			$merge_order['pay_status'] = 0;
-			$merge_order['pay_time'] = 0;
-			$merge_order['means_of_payment'] = 0;
-			$merge_order['is_del'] = 0;
+            $merge_order['order_sn']         = 'JY'.date('Ymdhis',time()).rand(10,99);
+            $merge_order['order_ids']        = implode(',', $all_order_id);
+            $merge_order['receive_user']     = $address['name'];
+            $merge_order['receive_tel']      = $address['tel'];
+            $merge_order['location_id']      = $location_id;
+            $merge_order['create_time']      = time();
+            $merge_order['total_price']      = $all_total_price;
+            $merge_order['pay_status']       = 0;
+            $merge_order['pay_time']         = 0;
+            $merge_order['means_of_payment'] = 0;
+            $merge_order['is_del']           = 0;
 
-			$merge_order_id=M('pms_merge_order')->add($merge_order);
-			
-
+            // $merge_order_id=M('pms_merge_order')->add($merge_order);
+			$merge_order_id = Yii::$app->db->createCommand()->insert('fw_pms_merge_order',$merge_order)->execute();
+            $merge_order_id = Yii::$app->db->getLastInsertId();
 			if($merge_order_id){
 				//订单创建成功后清空购物车
-				M('pms_erp_cart')->where('location_id='.$location_id)->delete();
-				$result['status']=1;
-				$result['info']='订单创建成功';
-				$result['order_id']=$merge_order_id;
-				$this->ajaxReturn($result);	
+                // M('pms_erp_cart')->where('location_id ='.$location_id)->delete();
+                Yii::$app->db->createCommand()->delete('fw_pms_erp_cart',['location_id'=>$location_id])->execute();
+                $result['status']   = 1;
+                $result['info']     = '订单创建成功';
+                $result['order_id'] = $merge_order_id;
+                	
 			}else{
-				$result['status']=0;
-				$result['info']='订单创建失败';
-				$this->ajaxReturn($result);
+                $result['status'] = 0;
+                $result['info']   = '订单创建失败';
 			}
 
 		}else{
 			$result['status']=0;
 			$result['info']='订单创建失败';
-			$this->ajaxReturn($result);
 		}
+        return json_encode($result);
 
 	}
 
 	//订单信息
-	public function order(){
-		$id=intval($_REQUEST['id']);
-		$t=trim($_REQUEST['t']);
-		$location_id=$this->get_location_ids();
+	public function actionOrder(){
+        $id          = intval($_REQUEST['id']);
+        $t           = trim($_REQUEST['t']);
+        $location_id = $this->get_location_ids();
 
 		if($t=='pms_merge_order'){
-			$order_info=M('pms_merge_order')->where('id='.$id.' and pay_status=0 and system=0 and location_id='.$location_id)->find();			
+            // $order_info=M('pms_merge_order')->where('id='.$id.' and pay_status=0 and system=0 and location_id='.$location_id)->find();           
+			$order_info = (new \yii\db\Query())->from('fw_pms_merge_order')
+            ->where(['id'=>$id,'pay_status'=>0,'system'=>0,'location_id'=>$location_id])
+            ->one();			
 		}else{
-			$order_info=M('pms_order')->where('id='.$id.' and purchase_user_id=0 and system=0 and location_id='.$location_id)->find();
+            // $order_info=M('pms_order')->where('id='.$id.' and purchase_user_id=0 and system=0 and location_id='.$location_id)->find();
+			$order_info = (new \yii\db\Query())->from('fw_pms_order')
+            ->where(['id'=>$id,'purchase_user_id'=>0,'system'=>0,'location_id'=>$location_id])
+            ->one();
 
-			$order_info['pay_type']=$this->get_pay_type($order_info['means_of_payment'],$order_info['pay_type']);		
+			$order_info['pay_type'] = $this->get_pay_type($order_info['means_of_payment'],$order_info['pay_type']);		
 		}
+        // echo (new \yii\db\Query)->from('fw_pms_order')->where(['id'=>$id,'purchase_user_id'=>0,'system'=>0,'location_id'=>$location_id])->createCommand()->getRawSql();
 
 		if(!$order_info){
-			$this->error('无此订单信息',U('Purchase/index'),3);
+			$this->redirect(Url::toRoute('purchase/index'));
 		}
 		
-		$this->assign('oi',$order_info);
-		$this->assign('title','诚车堂-订货管理小助手！');
-		$this->display();
+        return $this->render('order',['oi'=>$order_info,'title'=>'诚车堂-订货管理小助手！']);
 	}
 
 	//确认订单
@@ -1326,18 +1340,27 @@ class PurchaseController extends Controller {
 	private function get_coupon($goods_id,$price,$supplier_id){
 
 		//查找本门店在该供应商的优惠券列表
-		$location_coupon =M()->query("select id,goods_ids,full_money,discount_money from fw_pms_location_coupon where location_id=".intval($this->get_location_ids())." and supplier_id=".$supplier_id." and num>0 and (unix_timestamp() between start_time and end_time)"); 
+        // $location_coupon =M()->query("select id,goods_ids,full_money,discount_money from fw_pms_location_coupon where location_id=".intval($this->get_location_ids())." and supplier_id=".$supplier_id." and num>0 and (unix_timestamp() between start_time and end_time)"); 
+		$location_coupon = Yii::$app->db->createCommand("select id,goods_ids,full_money,discount_money from fw_pms_location_coupon where location_id=".intval($this->get_location_ids())." and supplier_id=".$supplier_id." and num>0 and (unix_timestamp() between start_time and end_time)")->queryAll(); 
 
 		if($location_coupon){
 			foreach ($location_coupon as $k => $v) {
 
 				foreach ($goods_id as $g_k => $g_v) {
 					if($v['goods_ids'] == 0){//所有商品
-						$coupon[$v['id']]['price'] += $price[$g_k];
+                        if(isset($coupon[$v['id']]['price'])){
+    						$coupon[$v['id']]['price'] += $price[$g_k];
+                        }else{
+                            $coupon[$v['id']]['price'] = $price[$g_k];
+                        }
 					}else{//部分商品
 						$had_goods_id = explode(',', $v['goods_ids']);
 						if(in_array($g_v, $had_goods_id)){
-							$coupon[$v['id']]['price'] += $price[$g_k];
+							if(isset($coupon[$v['id']]['price'])){
+                                $coupon[$v['id']]['price'] += $price[$g_k];
+                            }else{
+                                $coupon[$v['id']]['price'] = $price[$g_k];
+                            }
 						}
 					}
 				}
@@ -1372,21 +1395,34 @@ class PurchaseController extends Controller {
 	private function get_activity($goods_id,$price,$supplier_id){
 		
 		//查找符合的有效期内的供应商活动
-		$act_list =M()->query("select id,act_name,goods_ids,act_type from fw_pms_activity where supplier_id=".$supplier_id." and is_del=0 and (unix_timestamp() between start_time and end_time)");
-		
+		// $act_list = M()->query("select id,act_name,goods_ids,act_type from fw_pms_activity where supplier_id=".$supplier_id." and is_del=0 and (unix_timestamp() between start_time and end_time)");
+		$act_list = Yii::$app->db
+		->createCommand("select id,act_name,goods_ids,act_type from fw_pms_activity where supplier_id=".$supplier_id." and is_del=0 and (unix_timestamp() between start_time and end_time)")
+		->queryAll();
+
+        $act_rule_list = [];
 
 		if($act_list){
+			$act = [];
 			foreach ($act_list as $k => $v) {
 
 				foreach ($goods_id as $g_k => $g_v) {
 					if($v['goods_ids'] == 0){//所有商品
-						$act[$v['id']]['price'] += $price[$g_k];
+						if(isset($act[$v['id']]['price']))
+							$act[$v['id']]['price'] += $price[$g_k];
+						else
+							$act[$v['id']]['price'] = $price[$g_k];
+
 						$act[$v['id']]['act_type'] = $v['act_type'];
 						$act[$v['id']]['is_all_val'] = '全部商品';
 					}else{//部分商品
 						$had_goods_id = explode(',', $v['goods_ids']);
 						if(in_array($g_v, $had_goods_id)){
-							$act[$v['id']]['price'] += $price[$g_k];
+							if(isset($act[$v['id']]['price']))
+								$act[$v['id']]['price'] += $price[$g_k];
+							else
+								$act[$v['id']]['price'] = $price[$g_k];
+
 							$act[$v['id']]['act_type'] = $v['act_type'];
 							$act[$v['id']]['is_all_val'] = '部分商品';
 						}
@@ -1424,18 +1460,21 @@ class PurchaseController extends Controller {
 
 		//金额满足能使用的规则
 		if($act_type == 1 || $act_type == 2){//满减、满折
-			$act_rule_list = M('pms_activity_rule')->where('act_id='.$act_id.' and '.$act_store_price.'>=full_money');
-			//$GLOBALS['db']->getAll("select * from ".DB_PREFIX."pms_activity_rule where act_id=".$act_id." and ".$act_store_price.">=full_money");
+			// $act_rule_list = M('pms_activity_rule')->where('act_id='.$act_id.' and '.$act_store_price.'>=full_money');
+			$act_rule_list = (new \yii\db\Query())->from('fw_pms_activity_rule')->where(['act_id'=>$act_id,'full_money >'=>$act_store_price]);
 		}
 		if($act_type == 3){//购物赠券,一个活动对应一个规则
 
 			//规则：达到满足金额。优惠券：1.有效 2.有效期内 3.本门店领取张数合计未超过限制次数 4.赠送张数小于发行总张数
-			$act_rule_list =M()->query("select par.*,pc.discount_money as coupon_price,pc.id as coupon_id,pc.limit_num from fw_pms_activity_rule as par left join fw_pms_coupon as pc on par.discount_money=pc.id where par.act_id=".$act_id." and ".$act_store_price.">=par.full_money and pc.is_del=0 and (unix_timestamp() between pc.start_time and pc.end_time) and pc.give_num<pc.total_num"); 
-			
+			// $act_rule_list =M()->query("select par.*,pc.discount_money as coupon_price,pc.id as coupon_id,pc.limit_num from fw_pms_activity_rule as par left join fw_pms_coupon as pc on par.discount_money=pc.id where par.act_id=".$act_id." and ".$act_store_price.">=par.full_money and pc.is_del=0 and (unix_timestamp() between pc.start_time and pc.end_time) and pc.give_num<pc.total_num"); 
+			$act_rule_list = Yii::$app->db->createCommand("select par.*,pc.discount_money as coupon_price,pc.id as coupon_id,pc.limit_num from fw_pms_activity_rule as par left join fw_pms_coupon as pc on par.discount_money=pc.id where par.act_id=".$act_id." and ".$act_store_price.">=par.full_money and pc.is_del=0 and (unix_timestamp() between pc.start_time and pc.end_time) and pc.give_num<pc.total_num")
+			->queryAll(); 
 
 			if($act_rule_list[0]['coupon_id']){
 				//判断门店之前购物赠券(type=1)次数是否已超
-				$coupon_list =M('pms_location_coupon')->where('coupon_id='.$act_rule_list[0]['coupon_id'].' and location_id='.$this->get_location_ids().' and type=1');
+				// $coupon_list = M('pms_location_coupon')->where('coupon_id='.$act_rule_list[0]['coupon_id'].' and location_id='.$this->get_location_ids().' and type=1');
+				$coupon_list = (new \yii\db\Query())->from('fw_pms_location_coupon')->where(['coupon_id'=>$act_rule_list[0]['coupon_id'],'location_id'=>$this->get_location_ids(),'type'=>1])
+				->all();
 			
 				if($coupon_list){
 					$location_coupon_num = 0;
@@ -1482,25 +1521,29 @@ class PurchaseController extends Controller {
 	private function use_act_coupon($act_rule_id,$coupon_ids,$datas){
 
 		// 1.参与活动
+        $act = [];
 		if($act_rule_id){
 			//有效期内、有效的活动规则
-			$act_list =M()->query("select par.act_id,par.full_money,par.discount_money,pa.start_time,pa.end_time,pa.supplier_id,pa.goods_ids,pa.act_type from fw_pms_activity_rule as par left join fw_pms_activity as pa on pa.id=par.act_id where pa.is_del=0 and par.id in (".$act_rule_id.") and (unix_timestamp() between pa.start_time and pa.end_time)");
+            // $act_list =M()->query("select par.act_id,par.full_money,par.discount_money,pa.start_time,pa.end_time,pa.supplier_id,pa.goods_ids,pa.act_type from fw_pms_activity_rule as par left join fw_pms_activity as pa on pa.id=par.act_id where pa.is_del=0 and par.id in (".$act_rule_id.") and (unix_timestamp() between pa.start_time and pa.end_time)");
+			$act_list = Yii::$app->db->createCommand("select par.act_id,par.full_money,par.discount_money,pa.start_time,pa.end_time,pa.supplier_id,pa.goods_ids,pa.act_type from fw_pms_activity_rule as par left join fw_pms_activity as pa on pa.id=par.act_id where pa.is_del=0 and par.id in (".$act_rule_id.") and (unix_timestamp() between pa.start_time and pa.end_time)")->queryAll();
 
-		}
+    		if($act_list){
+    			foreach ($act_list as $k => $v) {
+    				$act[$v['supplier_id']] = $v;
+    			}
+    		}
+        }
 
-		if($act_list){
-			foreach ($act_list as $k => $v) {
-				$act[$v['supplier_id']] = $v;
-			}
-		}
 
 		foreach ($datas as $k => $v) {
 
 			//初始化 活动金额、活动id、门店优惠券id、优惠金额 
-			$new_datas[$k]['act_price'] = 0;
-			$new_datas[$k]['act_id'] = 0;
-			$new_datas[$k]['location_coupon_id'] = 0;
-			$new_datas[$k]['discount_price'] = 0;
+            $new_datas[$k]['act_price']            = 0;
+            $new_datas[$k]['act_id']               = 0;
+            $new_datas[$k]['location_coupon_id']   = 0;
+            $new_datas[$k]['discount_price']       = 0;
+            $new_datas[$k]['total_original_price'] = 0;
+            $new_datas[$k]['total_price']          = 0;
 
 			foreach ($v['goods_id'] as $d_k => $d_v) {
 
@@ -1509,7 +1552,7 @@ class PurchaseController extends Controller {
 				//总金额(未扣除优惠)
 				$new_datas[$k]['total_price'] += $v['price'][$d_k];
 
-				if($act[$k]){//如果存在该供应商活动
+				if(isset($act[$k])){//如果存在该供应商活动
 
 					if($act[$k]['goods_ids'] == 0){//全部商品
 						$new_datas[$k]['act_price'] += $v['price'][$d_k];
@@ -1528,39 +1571,48 @@ class PurchaseController extends Controller {
 
 		foreach ($datas as $k => $v) {
 			//判断是否能参与活动，获得优惠或折扣
-			if($new_datas[$k]['act_price'] >= $act[$k]['full_money'] && $new_datas[$k]['act_price']>0 && $act[$k]['full_money']>0){
+            if(!empty($ack[$k])){
 
-				$new_datas[$k]['act_id'] = $act[$k]['act_id'];
+    			if($new_datas[$k]['act_price'] >= $act[$k]['full_money'] && $new_datas[$k]['act_price']>0 && $act[$k]['full_money']>0){
 
-				if($act[$k]['act_type'] == 1 && $act[$k]['discount_money']>0 && $act[$k]['discount_money']<$act[$k]['full_money']){//1为满就减
-					$new_datas[$k]['discount_price'] = $act[$k]['discount_money'];//优惠金额
-					$new_datas[$k]['total_price'] -= $act[$k]['discount_money'];//总金额减去优惠金额
-				}
-				if($act[$k]['act_type'] == 2 && $act[$k]['discount_money']>0 && $act[$k]['discount_money']<10){//2为满就折
-					$new_datas[$k]['discount_price'] = $new_datas[$k]['act_price']*((10-$act[$k]['discount_money'])/10);//折扣金额
-					$new_datas[$k]['total_price'] -= $new_datas[$k]['act_price']*((10-$act[$k]['discount_money'])/10);//总金额减去折扣金额
-				}
+    				$new_datas[$k]['act_id'] = $act[$k]['act_id'];
 
-			}
+    				if($act[$k]['act_type'] == 1 && $act[$k]['discount_money']>0 && $act[$k]['discount_money']<$act[$k]['full_money']){//1为满就减
+    					$new_datas[$k]['discount_price'] = $act[$k]['discount_money'];//优惠金额
+    					$new_datas[$k]['total_price'] -= $act[$k]['discount_money'];//总金额减去优惠金额
+    				}
+    				if($act[$k]['act_type'] == 2 && $act[$k]['discount_money']>0 && $act[$k]['discount_money']<10){//2为满就折
+    					$new_datas[$k]['discount_price'] = $new_datas[$k]['act_price']*((10-$act[$k]['discount_money'])/10);//折扣金额
+    					$new_datas[$k]['total_price'] -= $new_datas[$k]['act_price']*((10-$act[$k]['discount_money'])/10);//总金额减去折扣金额
+    				}
+
+    			}
+            }       
 		}
+
+        $coupon = [];
 
 		//2.使用优惠券
 		if($coupon_ids){
-			$coupon_list = M('pms_location_coupon')->where("location_id=".intval($this->get_location_ids())." and num>0 and (unix_timestamp() between start_time and end_time) and id in (".$coupon_ids.")")->select();
+            // $coupon_list = M('pms_location_coupon')->where("location_id=".intval($this->get_location_ids())." and num>0 and (unix_timestamp() between start_time and end_time) and id in (".$coupon_ids.")")->select();
+			$coupon_list = (new \yii\db\Query())->from('fw_pms_location_coupon')
+            ->where(["location_id"=>intval($this->get_location_ids()),"num>0","unix_timestamp() between start_time and end_time","id"=>$coupon_ids])
+            ->all();
 			
-		}
+    		if($coupon_list){
+    			foreach ($coupon_list as $k => $v) {
+    				$coupon[$v['supplier_id']] = $v;
+    			}
+    		}
+        }
 
-		if($coupon_list){
-			foreach ($coupon_list as $k => $v) {
-				$coupon[$v['supplier_id']] = $v;
-			}
-		}
 
 		foreach ($datas as $k => $v) {
+            $new_datas[$k]['coupon_act_price'] = 0;
 
 			foreach ($v['goods_id'] as $d_k => $d_v) {
 
-				if($coupon[$k]){//如果存在优惠券
+				if(isset($coupon[$k])){//如果存在优惠券
 
 					if($coupon[$k]['goods_ids'] == 0){//全部商品
 						$new_datas[$k]['coupon_act_price'] += $v['price'][$d_k];
@@ -1579,24 +1631,31 @@ class PurchaseController extends Controller {
 
 		foreach ($datas as $k => $v) {
 			// 判断是否能使用优惠券
-			if($new_datas[$k]['coupon_act_price'] >= $coupon[$k]['full_money'] && $new_datas[$k]['coupon_act_price']>0 && $coupon[$k]['full_money']>0){
+            if(!empty($coupon[$k])){
 
-				$new_datas[$k]['location_coupon_id'] = $coupon[$k]['id'];
+    			if($new_datas[$k]['coupon_act_price'] >= $coupon[$k]['full_money'] && $new_datas[$k]['coupon_act_price']>0 && $coupon[$k]['full_money']>0){
 
-				if($coupon[$k]['discount_money']>0 && $coupon[$k]['discount_money']<$coupon[$k]['full_money']){
-					$new_datas[$k]['discount_price'] += $coupon[$k]['discount_money']; //(活动优惠、折扣金额)+优惠券金额
-					$new_datas[$k]['total_price'] -= $coupon[$k]['discount_money'];//总金额减去优惠券金额(已减活动金额)	
-				}
-				if($coupon[$k]['id']){
-					$new_location_coupon_id[] = $coupon[$k]['id'];//用于减优惠券数量
-				}
+    				$new_datas[$k]['location_coupon_id'] = $coupon[$k]['id'];
 
-			}
+    				if($coupon[$k]['discount_money']>0 && $coupon[$k]['discount_money']<$coupon[$k]['full_money']){
+    					$new_datas[$k]['discount_price'] += $coupon[$k]['discount_money']; //(活动优惠、折扣金额)+优惠券金额
+    					$new_datas[$k]['total_price'] -= $coupon[$k]['discount_money'];//总金额减去优惠券金额(已减活动金额)	
+    				}
+    				if($coupon[$k]['id']){
+    					$new_location_coupon_id[] = $coupon[$k]['id'];//用于减优惠券数量
+    				}
+
+    			}
+            }    
 		}
 
 		//减优惠券数量
-		if($new_location_coupon_id){
-			M('pms_location_coupon')->where("id in(".implode(',', $new_location_coupon_id).")")->setDec('num');			
+		if(!empty($new_location_coupon_id)){
+            // M('pms_location_coupon')->where("id in(".implode(',', $new_location_coupon_id).")")->setDec('num');          
+			$num = (new \yii\db\Query())->from('fw_pms_location_coupon')
+            ->where(["id"=>$new_location_coupon_id])
+            ->select(['num']);
+            Yii::$app->db->createCommand()->update('fw_pms_location_coupon',['num'=>$num-1],['id'=>$new_location_coupon_id])->execute();			
 		}
 		
 		return $new_datas;
@@ -1606,30 +1665,38 @@ class PurchaseController extends Controller {
 	//判断商品库存
 	public function goods_stock_info($goods_id,$goods_num){
 
-		$location_id=$this->get_location_ids();
+		$location_id = $this->get_location_ids();
 
 		//商品库存
-		$goods_stock=intval(M('pms_goods')->where('id='.$goods_id)->getField('stock'));		
-		
+		// $goods_stock = intval(M('pms_goods')->where('id='.$goods_id)->getField('stock'));		
+		$goods_stock = (new \yii\db\Query())->from('fw_pms_goods')->where(['id'=>$goods_id])->select(['stock'])->one();		
+		$goods_stock = $goods_stock['stock'];
 		//购物车已添加商品库存
-		$cart_stock=intval(M('pms_erp_cart')->where('goods_id='.$goods_id.' and location_id='.intval($location_id))->sum('number'));
+		// $cart_stock = intval(M('pms_erp_cart')->where('goods_id='.$goods_id.' and location_id='.intval($location_id))->sum('number'));
+		$cart_stock = (new \yii\db\Query())->from('fw_pms_erp_cart')->where(['goods_id'=>$goods_id,'location_id'=>intval($location_id)])->sum('number');
 	
 		//库存不足返回负数
-		$stock=$goods_stock-$goods_num-$cart_stock;
+		$stock = $goods_stock-$goods_num-$cart_stock;
 
 		return $stock;		
 	}
 
 	//获取门店购物车中的商品数量
 	public function get_location_cart_info(){
-		$location_id=$this->get_location_ids();		
-		$info=M()->query("select sum(number) as number,sum(price*number) as total_price from fw_pms_erp_cart where location_id=".$location_id." limit 1");
-		return $info[0];
+		$location_id = $this->get_location_ids();		
+		$info = (new \yii\db\Query())
+        ->select(['sum(number) as number','sum(price*number) as total_price'])
+        ->from('fw_pms_erp_cart')
+        ->where(['location_id'=>$location_id])
+        ->one();
+        // var_dump($info);exit;
+		return $info;
 	}
 
 	//返回当前登录门店id
 	public function get_location_ids(){
-		$account_info=session('account_info');
+        $session = Yii::$app->session;
+		$account_info = $session['account_info'];
 		return $account_info['location_ids'][0];
 	}
 
